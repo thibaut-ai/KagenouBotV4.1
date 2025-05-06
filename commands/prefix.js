@@ -4,74 +4,66 @@ const path = require("path");
 
 module.exports = {
 
-    name: "prefix",
+  name: "prefix",
 
-    author: "Aljur Pogoy",
+  author: "Aljur Pogoy",
 
-    nonPrefix: true,
+  nonPrefix: true,
 
-    description: "Shows the bot's current prefixes for all systems.",
+  description: "Shows the bot's current prefixes for all systems.",
 
-    
+  async run({ api, event }) {
 
-    async run({ api, event }) {
+    try {
 
-        try {
+      const mainConfig = require("../config.json");
 
-            
+      const mainPrefix = mainConfig.Prefix?.[0] || "/";
 
-            const mainConfig = require("../config.json");
+      const tokitoConfigPath = path.join(__dirname, "../SYSTEM/tokito-system/config.json");
 
-            const mainPrefix = mainConfig.Prefix?.[0] || "/";
+      const tokitoConfig = fs.existsSync(tokitoConfigPath) ? require(tokitoConfigPath) : { Prefix: ["?"] };
 
-          
+      const tokitoPrefix = tokitoConfig.Prefix?.[0] || "?";
 
-            const tokitoConfigPath = path.join(__dirname, "..", "tokito-system", "config.json");
+      const cidConfigPath = path.join(__dirname, "../SYSTEM/cid-kagenou-system/config.json");
 
-            const tokitoConfig = fs.existsSync(tokitoConfigPath) ? require(tokitoConfigPath) : { Prefix: ["?"] };
+      const cidConfig = fs.existsSync(cidConfigPath) ? require(cidConfigPath) : { Prefix: ["!"] };
 
-            const tokitoPrefix = tokitoConfig.Prefix?.[0] || "?";
+      const cidPrefix = cidConfig.Prefix?.[0] || "!";   
 
-            
+      const ownirsPath = path.join(__dirname, "../SYSTEM/ownirsv2-system/config.json");
 
-            const cidConfigPath = path.join(__dirname, "..", "cid-kagenou-system", "config.json");
+      const ownirsConfig = fs.existsSync(ownirsPath) ? require(ownirsPath) : { prefix: ["."] };
 
-            const cidConfig = fs.existsSync(cidConfigPath) ? require(cidConfigPath) : { Prefix: ["!"] };
+      const ownirsPrefix = ownirsConfig.prefix?.[0] || ".";
 
-            const cidPrefix = cidConfig.Prefix?.[0] || "!";
+      const message =
 
-            
+        "System Prefix Information\n\n" +
 
-            const vipConfigPath = path.join(__dirname, "..", "system", "config.json");
+        "『 🌐 』Main System Prefix: " + mainPrefix + "\n" +
 
-            const vipConfig = fs.existsSync(vipConfigPath) ? require(vipConfigPath) : { Prefix: ["+"] };
+        "『 🪐 』Tokito System Prefix: " + tokitoPrefix + "\n" +
 
-            const vipPrefix = vipConfig.Prefix?.[0] || "+";
+        "『 🗡️ 』 Cid-Kagenou System Prefix: " + cidPrefix + "\n" +
 
-            const message = 
+        "『 ✨ 』 OwnirsV2-System Prefix: " + ownirsPrefix + "\n\n" +
 
-                "System Prefix Information\n\n" +
+        "To use commands, type the system prefix followed by the command name.";
 
-                " [🌐] Main System Prefix: " + mainPrefix + "\n" +
+      // Send message with contact attachment
 
-                "[👾] Tokito System Prefix: " + tokitoPrefix + "\n" +
+      api.shareContact(message, api.getCurrentUserID(), event.threadID);
 
-                "[🗡️] Cid-Kagenou System Prefix: " + cidPrefix + "\n" +
+    } catch (error) {
 
-                "[🎭] VIP System Prefix: " + vipPrefix + "\n\n" +
+      console.error("Error loading prefixes:", error);
 
-                "To use commands, type the system prefix followed by the command name.";
-
-            api.sendMessage(message, event.threadID, event.messageID);
-
-        } catch (error) {
-
-            console.error("Error loading prefixes:", error);
-
-            api.sendMessage("âŒ Failed to load prefixes.", event.threadID, event.messageID);
-
-        }
+      api.sendMessage("❌ Failed to load prefixes.", event.threadID, event.messageID);
 
     }
+
+  },
 
 };

@@ -2,44 +2,84 @@ const fs = require("fs");
 
 const path = require("path");
 
-const balancePath = path.join(__dirname, "..", "database", "balance.json");
-
 module.exports = {
 
-    name: "balance",
+  name: "balance",
 
-    description: "Check your wallet and bank balance.",
+  author: "Aljur Pogoy",
 
-    usage: "/balance",
+  nonPrefix: false, // Requires prefix (e.g., /balance)
 
-    
+  description: "Check your wallet and bank balance.",
 
-    run: async ({ api, event }) => {
+  async run({ api, event }) {
 
-        if (!fs.existsSync(balancePath)) fs.writeFileSync(balancePath, "{}");
+    const balanceFile = path.join(__dirname, "../database/balance.json");
 
-        const balanceData = JSON.parse(fs.readFileSync(balancePath));
+    const { threadID, messageID, senderID } = event;
 
-        const userID = event.senderID;
+    try {
 
-        if (!balanceData[userID]) {
+      // Initialize balance file if it doesn't exist
 
-            balanceData[userID] = { balance: 1000, bank: 0 };
+      if (!fs.existsSync(balanceFile)) {
 
-            fs.writeFileSync(balancePath, JSON.stringify(balanceData, null, 2));
+        fs.writeFileSync(balanceFile, JSON.stringify({}, null, 2));
 
-        }
+      }
 
-        const { balance, bank } = balanceData[userID];
+      // Load balance data
 
-        api.sendMessage(
+      let balanceData = JSON.parse(fs.readFileSync(balanceFile, "utf8"));
 
-            `💰 Your Balance:\n\n💸 Wallet: ${balance} coins\n🏦 Bank: ${bank} coins`,
+      // Initialize user data if it doesn't exist
 
-            event.threadID
+      if (!balanceData[senderID]) {
 
-        );
+        balanceData[senderID] = { balance: 0, bank: 0 };
+
+        fs.writeFileSync(balanceFile, JSON.stringify(balanceData, null, 2));
+
+      }
+
+      const { balance, bank } = balanceData[senderID];
+
+      // Construct balance message
+
+      let balanceMessage = `════『 𝗕𝗔𝗟𝗔𝗡𝗖𝗘 』════\n\n`;
+
+      balanceMessage += `  ┏━━━━━━━┓\n`;
+
+      balanceMessage += `  ┃ 『 𝗪𝗔𝗟𝗟𝗘𝗧 』 💸 ${balance} coins\n`;
+
+      balanceMessage += `  ┃ 『 𝗕𝗔𝗡𝗞 』 🏦 ${bank} coins\n`;
+
+      balanceMessage += `  ┗━━━━━━━┛\n\n`;
+
+      balanceMessage += `> Thank you for using our Cid Kagenou bot\n`;
+
+      balanceMessage += `> For further assistance, contact: korisawaumu@ gmail.com`;
+
+      api.sendMessage(balanceMessage, threadID, messageID);
+
+    } catch (error) {
+
+      console.error("❌ Error in balance command:", error);
+
+      let errorMessage = `════『 𝗕𝗔𝗟𝗔𝗡𝗖𝗘 』════\n\n`;
+
+      errorMessage += `  ┏━━━━━━━┓\n`;
+
+      errorMessage += `  ┃ 『 𝗜𝗡𝗙𝗢 』 An error occurred while retrieving your balance.\n`;
+
+      errorMessage += `  ┗━━━━━━━┛\n\n`;
+
+      errorMessage += `> Thank you for using our Cid Kagenou bot`;
+
+      api.sendMessage(errorMessage, threadID, messageID);
 
     }
+
+  },
 
 };

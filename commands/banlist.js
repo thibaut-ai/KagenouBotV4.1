@@ -66,7 +66,7 @@ module.exports = {
 
                 }
 
-                // Send message after fetching all users
+                
 
                 if (fetchedUsers === bannedList.length) {
 

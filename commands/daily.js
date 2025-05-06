@@ -1,71 +1,109 @@
-const fs = require("fs");
+const fs = require("fs-extra");
 
 const path = require("path");
 
-const balancePath = path.join(__dirname, "..", "database", "balance.json");
-
-const cooldownPath = path.join(__dirname, "..", "database", "dailyCooldown.json");
-
 module.exports = {
 
-    name: "daily",
+  name: "daily",
 
-    description: "Claim your daily free coins!",
+  author: "Aljur Pogoy",
 
-    usage: "/daily",
+  description: "Claim your daily reward of 500 coins! (Once every 24 hours)",
 
-    run: async ({ api, event }) => {
+  version: "3.0.0",
 
-        if (!fs.existsSync(balancePath)) fs.writeFileSync(balancePath, "{}");
+  usage: "<prefix>daily",
 
-        if (!fs.existsSync(cooldownPath)) fs.writeFileSync(cooldownPath, "{}");
+  async run({ api, event }) {
 
-        const balanceData = JSON.parse(fs.readFileSync(balancePath));
+    const { threadID, messageID, senderID } = event;
 
-        const cooldownData = JSON.parse(fs.readFileSync(cooldownPath));
+    const balanceFile = path.join(__dirname, "..", "database", "balance.json");
 
-        const userID = event.senderID;
+    const claimsFile = path.join(__dirname, "..", "database", "dailyclaims.json");
 
-        const dailyAmount = Math.floor(Math.random() * (500 - 200 + 1)) + 200; // Get random coins (200-500)
+    let balances = {};
 
-        const cooldownTime = 24 * 60 * 60 * 1000; // 24 hours
+    try {
 
-        const now = Date.now();
+      balances = JSON.parse(fs.readFileSync(balanceFile, "utf8"));
 
-        if (!balanceData[userID]) {
+    } catch (error) {
 
-            balanceData[userID] = { balance: 1000, bank: 0 };
-
-        }
-
-        if (cooldownData[userID] && now - cooldownData[userID] < cooldownTime) {
-
-            const remainingTime = cooldownTime - (now - cooldownData[userID]);
-
-            const hours = Math.floor(remainingTime / (60 * 60 * 1000));
-
-            const minutes = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
-
-            return api.sendMessage(`⏳ You've already claimed your daily reward!\nCome back in **${hours}h ${minutes}m**.`, event.threadID);
-
-        }
-
-        balanceData[userID].balance += dailyAmount;
-
-        cooldownData[userID] = now;
-
-        fs.writeFileSync(balancePath, JSON.stringify(balanceData, null, 2));
-
-        fs.writeFileSync(cooldownPath, JSON.stringify(cooldownData, null, 2));
-
-        return api.sendMessage(
-
-            `🎁Daily Reward Claimed!\n\n💰 You received:** ${dailyAmount} coins\n💸 New Balance: ${balanceData[userID].balance} coins`,
-
-            event.threadID
-
-        );
+      balances = {};
 
     }
+
+    if (!balances[senderID] || balances[senderID] === null) {
+
+      balances[senderID] = { balance: 0, bank: 0 };
+
+      fs.writeFileSync(balanceFile, JSON.stringify(balances, null, 2));
+
+    }
+
+    let claims = {};
+
+    try {
+
+      claims = JSON.parse(fs.readFileSync(claimsFile, "utf8"));
+
+    } catch (error) {
+
+      claims = {};
+
+    }
+
+    const now = Date.now();
+
+    const lastClaim = claims[senderID] || 0;
+
+    const timeSinceLastClaim = now - lastClaim;
+
+    const cooldown = 24 * 60 * 60 * 1000;
+
+    if (timeSinceLastClaim < cooldown) {
+
+      const remainingTime = cooldown - timeSinceLastClaim;
+
+      const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+
+      const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+
+      const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+      let cooldownMessage = "⏳ 『 𝗗𝗔𝗜𝗟𝗬 𝗥𝗘𝗪𝗔𝗥𝗗 』 ⏳\n\n";
+
+      cooldownMessage += `❌ You already claimed your daily reward!\n`;
+
+      cooldownMessage += `⏰ Please wait ${hours}h ${minutes}m ${seconds}s to claim again.`;
+
+      return api.sendMessage(cooldownMessage, threadID, messageID);
+
+    }
+
+    const reward = 500;
+
+    balances[senderID].balance += reward;
+
+    claims[senderID] = now;
+
+    fs.writeFileSync(balanceFile, JSON.stringify(balances, null, 2));
+
+    fs.writeFileSync(claimsFile, JSON.stringify(claims, null, 2));
+
+    let successMessage = "🎁 『 𝗗𝗔𝗜𝗟𝗬 𝗥𝗘𝗪𝗔𝗥𝗗 』 🎁\n\n";
+
+    successMessage += `✅ You claimed your daily reward!\n`;
+
+    successMessage += `💰 Reward: ${reward} coins\n`;
+
+    successMessage += `🏦 New Balance: ${balances[senderID].balance} coins\n\n`;
+
+    successMessage += `⏰ Come back in 24 hours for your next reward!`;
+
+    await api.sendMessage(successMessage, threadID, messageID);
+
+  },
 
 };

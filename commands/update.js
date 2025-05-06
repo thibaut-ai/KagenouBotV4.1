@@ -16,7 +16,7 @@ module.exports = {
 
     async run({ api, event }) {
 
-        const updateUrl = "https://raw.githubusercontent.com/DeveloperOfGeoArchonMorax/Kagenou-Bot/main/package.json";
+        const updateUrl = "https://raw.githubusercontent.com/AljurTheCoder01/KagenouBotV3/main/package.json";
 
         const updateFilePath = "./package.json";
 
@@ -62,7 +62,7 @@ module.exports = {
 
                         
 
-                        // Run update command
+                       
 
                         exec("git pull && npm install", (error, stdout, stderr) => {
 

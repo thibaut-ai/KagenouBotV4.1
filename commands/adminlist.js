@@ -1,6 +1,10 @@
 module.exports = {
   name: 'adminlist',
   category: 'Info',
+  description: 'show admins lists',
+  version: '3.0.0',
+  author: 'aljur pogoy',
+  usage: 'adminlist',
   execute: async (api, event, args, commands, prefix, admins, appState, sendMessage) => {
     const { threadID } = event;
     let adminListMessage = "Admins 👑\n";

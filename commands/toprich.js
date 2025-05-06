@@ -4,54 +4,78 @@ const balanceFile = "./database/balance.json";
 
 module.exports = {
 
-    name: "toprich",
+  name: "toprich",
 
-    description: "Shows the top richest players.",
+  category: "Economy",
 
-    usage: "/toprich",
+  description: "Shows the top 5 richest players.",
 
-    async run({ api, event }) {
+  usage: "/toprich",
 
-        if (!fs.existsSync(balanceFile)) return api.sendMessage("⚠ No balance data found!", event.threadID);
+  author: "Aljur Pogoy",
 
-        let balanceData = JSON.parse(fs.readFileSync(balanceFile, "utf8"));
+  version: "3.0.0",
 
-        let sortedUsers = Object.entries(balanceData)
+  async run({ api, event }) {
 
-            .map(([id, data]) => ({ id, ...data }))
+    const { threadID, messageID } = event;
 
-            .sort((a, b) => (b.balance + b.bank) - (a.balance + a.bank))
+    if (!fs.existsSync(balanceFile)) {
 
-            .slice(0, 10); // Top 10
+      return api.sendMessage(
 
-        let message = "💰Top Richest Players:\n\n";
+        "⚠️ 𝗡𝗼 𝗯𝗮𝗹𝗮𝗻𝗰𝗲 𝗱𝗮𝘁𝗮 𝗳𝗼𝘂𝗻𝗱!",
 
-        let namePromises = sortedUsers.map(user =>
+        threadID,
 
-            new Promise(resolve => {
+        messageID
 
-                api.getUserInfo(user.id, (err, info) => {
+      );
 
-                    if (err) return resolve(` [Error] - UID: ${user.id}`);
+    }
 
-                    let name = info[user.id].name;
+    let balanceData = JSON.parse(fs.readFileSync(balanceFile, "utf8"));
 
-                    resolve(`🏆 ${name} (UID: ${user.id})\n   🪙 Wallet: ${user.balance}\n   🏦 Bank: ${user.bank}\n`);
+    let sortedUsers = Object.entries(balanceData)
 
-                });
+      .map(([id, data]) => ({ id, ...data }))
 
-            })
+      .sort((a, b) => (b.balance + b.bank) - (a.balance + a.bank))
 
-        );
+      .slice(0, 5); // Top 5 instead of Top 10
 
-        Promise.all(namePromises).then(names => {
+    let message = "════『 𝗧𝗢𝗣 𝗥𝗜𝗖𝗛𝗘𝗦𝗧 𝗣𝗟𝗔𝗬𝗘𝗥𝗦 』════\n\n";
 
-            message += names.join("\n");
+    let namePromises = sortedUsers.map(user =>
 
-            api.sendMessage(message, event.threadID);
+      new Promise(resolve => {
+
+        api.getUserInfo(user.id, (err, info) => {
+
+          if (err) return resolve(`❌ 𝗨𝗜𝗗: ${user.id} (𝗘𝗿𝗿𝗼𝗿)`);
+
+          let name = info[user.id].name;
+
+          resolve(`🏆 ${name} (UID: ${user.id})\n   🪙 𝗪𝗮𝗹𝗹𝗲𝘁: ${user.balance}\n   🏦 𝗕𝗮𝗻𝗸: ${user.bank}`);
 
         });
 
-    }
+      })
+
+    );
+
+    Promise.all(namePromises).then(names => {
+
+      message += names.join("\n\n");
+
+      message += `\n\n> 𝗧𝗵𝗮𝗻𝗸 𝘆𝗼𝘂 𝗳𝗼𝗿 𝘂𝘀𝗶𝗻𝗴 𝗖𝗶𝗱 𝗞𝗮𝗴𝗲𝗻𝗼𝘂 𝗕𝗼𝘁\n`;
+
+      message += `> 𝗖𝗼𝗻𝘁𝗮𝗰𝘁 𝗱𝗲𝘃: 𝗸𝗼𝗿𝗶𝘀𝗮𝘄𝗮𝘂𝗺𝘂𝗳𝘂@𝗴𝗺𝗮𝗶𝗹.𝗰𝗼𝗺`;
+
+      api.sendMessage(message, threadID, messageID);
+
+    });
+
+  },
 
 };

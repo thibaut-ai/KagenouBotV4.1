@@ -1,205 +1,347 @@
-const fs = require("fs");
+const fs = require("fs-extra");
 
 const path = require("path");
 
-const balanceFile = path.join(__dirname, "..", "database", "balance.json");
-
 module.exports = {
 
-    name: "games",
+  name: "games",
 
-    description: "Play multiple mini-games and win money!",
+  author: "Aljur Pogoy",
 
-    usage: "/games | <game> | <bet>",
+  version: "3.0.0",
 
-    
+  description: "Play games to earn coins",
 
-    async run({ api, event }) {
+  usage: "#games <game name> <bet> with 40% chance of winning",
 
-        const args = event.body.split(" | ").map(arg => arg.trim());
+  async run({ api, event, args }) {
 
-        if (args.length < 3) {
+    const { threadID, messageID, senderID } = event;
 
-            return api.sendMessage(
+    const balanceFile = path.join(__dirname, "../database/balance.json");
 
-                "⚠ Use: /games | <game> | <bet>\n\n🎮 Available Games:\n- slots\n- dice\n- card\n- guess\n- rps\n- coinflip\n- higherlower\n- archery\n- treasure\n- bonecollect", 
+    const attemptsFile = path.join(__dirname, "../database/gameattempts.json");
 
-                event.threadID
+    let balances = {};
 
-            );
+    try {
 
-        }
+      balances = JSON.parse(fs.readFileSync(balanceFile, "utf8"));
 
-        const game = args[1].toLowerCase();
+    } catch (error) {
 
-        const betAmount = parseInt(args[2]);
-
-        const senderID = event.senderID;
-
-        if (isNaN(betAmount) || betAmount <= 0) {
-
-            return api.sendMessage("⚠ Please enter a valid bet amount!", event.threadID);
-
-        }
-
-        let balanceData = {};
-
-        try {
-
-            balanceData = JSON.parse(fs.readFileSync(balanceFile, "utf8"));
-
-        } catch {
-
-            balanceData = {};
-
-        }
-
-        if (!balanceData[senderID]) {
-
-            balanceData[senderID] = { balance: 1000, bank: 0 };
-
-        }
-
-        if (balanceData[senderID].balance < betAmount) {
-
-            return api.sendMessage("❌ You don't have enough balance!", event.threadID);
-
-        }
-
-        let resultMessage = "";
-
-        let winAmount = 0;
-
-        let won = false;
-
-        switch (game) {
-
-            case "slots":
-
-                const symbols = ["🍒", "🍋", "🍉", "⭐", "💎"];
-
-                const slot1 = symbols[Math.floor(Math.random() * symbols.length)];
-
-                const slot2 = symbols[Math.floor(Math.random() * symbols.length)];
-
-                const slot3 = symbols[Math.floor(Math.random() * symbols.length)];
-
-                won = slot1 === slot2 && slot2 === slot3;
-
-                winAmount = won ? betAmount * 3 : 0;
-
-                resultMessage = `🎰 Slot Machine 🎰\n[ ${slot1} | ${slot2} | ${slot3} ]\n\n${won ? `🎉 You won ${winAmount}!` : "❌ You lost!"}`;
-
-                break;
-
-            case "dice":
-
-                const userRoll = Math.floor(Math.random() * 6) + 1;
-
-                const botRoll = Math.floor(Math.random() * 6) + 1;
-
-                won = userRoll > botRoll;
-
-                winAmount = won ? betAmount * 2 : 0;
-
-                resultMessage = `🎲 Dice Roll 🎲\nYou rolled: ${userRoll}\nBot rolled: ${botRoll}\n\n${won ? `🎉 You won ${winAmount}!` : "❌ You lost!"}`;
-
-                break;
-
-            case "card":
-
-                const userCard = Math.floor(Math.random() * 13) + 1;
-
-                const botCard = Math.floor(Math.random() * 13) + 1;
-
-                won = userCard > botCard;
-
-                winAmount = won ? betAmount * 2 : 0;
-
-                resultMessage = `🃏 Card Draw 🃏\nYou drew: ${userCard}\nBot drew: ${botCard}\n\n${won ? `🎉 You won ${winAmount}!` : "❌ You lost!"}`;
-
-                break;
-
-            case "coinflip":
-
-                const flipResult = Math.random() < 0.5 ? "Heads" : "Tails";
-
-                won = Math.random() < 0.5;
-
-                winAmount = won ? betAmount * 2 : 0;
-
-                resultMessage = `🎯 Coin Flip 🎯\nThe coin landed on: ${flipResult}\n\n${won ? `🎉 You won ${winAmount}!` : "❌ You lost!"}`;
-
-                break;
-
-            case "higherlower":
-
-                const currentNumber = Math.floor(Math.random() * 100) + 1;
-
-                const nextNumber = Math.floor(Math.random() * 100) + 1;
-
-                const guess = args[3]?.toLowerCase();
-
-                if (!["higher", "lower"].includes(guess)) {
-
-                    return api.sendMessage("⚠ Guess higher or lower!\nExample: /games | higherlower | 500 | higher", event.threadID);
-
-                }
-
-                won = (guess === "higher" && nextNumber > currentNumber) || (guess === "lower" && nextNumber < currentNumber);
-
-                winAmount = won ? betAmount * 2 : 0;
-
-                resultMessage = `🎮 Higher or Lower 🎮\nCurrent number: ${currentNumber}\nNext number: ${nextNumber}\n\n${won ? `🎉 You won ${winAmount}!` : "❌ You lost!"}`;
-
-                break;
-
-            case "archery":
-
-                won = Math.random() < 0.5;
-
-                winAmount = won ? betAmount * 3 : 0;
-
-                resultMessage = `🏹 Archery 🏹\nYou ${won ? "hit the bullseye! 🎯" : "missed... ❌"}\n\n${won ? `🎉 You won ${winAmount}!` : "❌ Better luck next time!"}`;
-
-                break;
-
-            case "treasure":
-
-                won = Math.random() < 0.4;
-
-                winAmount = won ? betAmount * 4 : 0;
-
-                resultMessage = `💰 Treasure Hunt 💰\nYou ${won ? "found a treasure! 🏆" : "found nothing..."}\n\n${won ? `🎉 You won ${winAmount}!` : "❌ Better luck next time!"}`;
-
-                break;
-
-            case "bonecollect":
-
-                const bones = ["💀", "🦴", "☠️"];
-
-                const foundBone = bones[Math.floor(Math.random() * bones.length)];
-
-                winAmount = foundBone === "💀" ? betAmount * 3 : foundBone === "🦴" ? betAmount * 2 : 0;
-
-                won = winAmount > 0;
-
-                resultMessage = `🦴 Bone Collect 🦴\nYou found: ${foundBone}\n\n${won ? `🎉 You won ${winAmount}!` : "❌ Nothing valuable..."}`;
-
-                break;
-
-            default:
-
-                return api.sendMessage("⚠ Invalid game. Use: slots, dice, card, guess, rps, coinflip, higherlower, archery, treasure, bonecollect.", event.threadID);
-
-        }
-
-        balanceData[senderID].balance += won ? winAmount : -betAmount;
-
-        fs.writeFileSync(balanceFile, JSON.stringify(balanceData, null, 2));
-
-        api.sendMessage(resultMessage, event.threadID);
+      balances = {};
 
     }
+
+    if (!balances[senderID] || balances[senderID] === null) {
+
+      balances[senderID] = { balance: 0, bank: 0 };
+
+      fs.writeFileSync(balanceFile, JSON.stringify(balances, null, 2));
+
+    }
+
+    let attemptsData = {};
+
+    try {
+
+      attemptsData = JSON.parse(fs.readFileSync(attemptsFile, "utf8"));
+
+    } catch (error) {
+
+      attemptsData = {};
+
+    }
+
+    if (!attemptsData[senderID]) {
+
+      attemptsData[senderID] = { attempts: 6, lastReset: 0 };
+
+    }
+
+    const now = Date.now();
+
+    const cooldownDuration = 5 * 60 * 1000;
+
+    if (attemptsData[senderID].attempts <= 0) {
+
+      const timeSinceLastReset = now - attemptsData[senderID].lastReset;
+
+      if (timeSinceLastReset < cooldownDuration) {
+
+        const timeLeft = Math.ceil((cooldownDuration - timeSinceLastReset) / 1000);
+
+        return api.sendMessage(
+
+          `🎮 『 𝗚𝗔𝗠𝗘𝗦 』 🎮\n\n❌ You've used all your attempts (0/6)! Please wait ${Math.floor(timeLeft / 60)} minutes and ${timeLeft % 60} seconds before playing again.`,
+
+          threadID,
+
+          messageID
+
+        );
+
+      } else {
+
+        attemptsData[senderID].attempts = 6;
+
+        attemptsData[senderID].lastReset = now;
+
+        fs.writeFileSync(attemptsFile, JSON.stringify(attemptsData, null, 2));
+
+      }
+
+    }
+
+    const choice = args[0] ? args[0].toLowerCase() : null;
+
+    if (!choice || !["slot", "archery", "rps"].includes(choice)) {
+
+      let menuMessage = "════『 𝗚𝗔𝗠𝗘𝗦 𝗠𝗘𝗡𝗨 』════\n\n";
+
+      menuMessage += "🎰 『 𝗦𝗟𝗢𝗧 』 - /games slot <bet>\n";
+
+      menuMessage += "🏹 『 𝗔𝗥𝗖𝗛𝗘𝗥�_Y 』 - /games archery <bet>\n";
+
+      menuMessage += "✊ 『 𝗥𝗣𝗦 』 (Rock, Paper, Scissors) - /games rps <bet> rock\n\n";
+
+      menuMessage += `Attempts left: ${attemptsData[senderID].attempts}/6\n\n`;
+
+      menuMessage += "> Play and earn coins!";
+
+      return api.sendMessage(menuMessage, threadID, messageID);
+
+    }
+
+    const bet = parseInt(args[1]);
+
+    if (!args[1] || isNaN(bet) || bet <= 0) {
+
+      return api.sendMessage(
+
+        `❌ Please provide a valid bet amount.\nExample: /games slot 1000\nAttempts left: ${attemptsData[senderID].attempts}/6`,
+
+        threadID,
+
+        messageID
+
+      );
+
+    }
+
+    const userBalance = balances[senderID].balance;
+
+    if (userBalance < bet) {
+
+      return api.sendMessage(
+
+        `💰 Your balance is too low!\nCurrent Balance: ${userBalance} coins\nRequired: ${bet} coins\nAttempts left: ${attemptsData[senderID].attempts}/6`,
+
+        threadID,
+
+        messageID
+
+      );
+
+    }
+
+    attemptsData[senderID].attempts -= 1;
+
+    if (attemptsData[senderID].attempts <= 0) {
+
+      attemptsData[senderID].lastReset = now;
+
+    }
+
+    fs.writeFileSync(attemptsFile, JSON.stringify(attemptsData, null, 2));
+
+    balances[senderID].balance -= bet;
+
+    fs.writeFileSync(balanceFile, JSON.stringify(balances, null, 2));
+
+    const saveBalance = () => {
+
+      fs.writeFileSync(balanceFile, JSON.stringify(balances, null, 2));
+
+    };
+
+    let resultMessage = "";
+
+    let winnings = 0;
+
+    if (choice === "slot") {
+
+      const symbols = ["🍒", "🍋", "🍊", "💎", "🔔"];
+
+      const reel1 = symbols[Math.floor(Math.random() * symbols.length)];
+
+      const reel2 = symbols[Math.floor(Math.random() * symbols.length)];
+
+      const reel3 = symbols[Math.floor(Math.random() * symbols.length)];
+
+      resultMessage = "🎰 『 𝗦𝗟𝗢𝗧 𝗖𝗔𝗦𝗜𝗡𝗢 』 🎰\n\n";
+
+      resultMessage += `${reel1} | ${reel2} | ${reel3}\n\n`;
+
+      const winChance = Math.random();
+
+      if (winChance < 0.4 || (reel1 === reel2 && reel2 === reel3)) {
+
+        winnings = bet * 2;
+
+        balances[senderID].balance += winnings;
+
+        resultMessage += `🎉 YOU WIN! 🎉\nWinnings: ${winnings} coins\nNew Balance: ${balances[senderID].balance} coins`;
+
+      } else {
+
+        resultMessage += `💔 YOU LOSE! 💔\nNew Balance: ${balances[senderID].balance} coins`;
+
+      }
+
+    } else if (choice === "archery") {
+
+      const score = Math.floor(Math.random() * 10) + 1;
+
+      resultMessage = "🏹 『 𝗔𝗥𝗖𝗛𝗘𝗥𝗬 』 🏹\n\n";
+
+      resultMessage += `🎯 Your Score: ${score}/10\n\n`;
+
+      if (score >= 5) {
+
+        winnings = Math.floor(bet * 1.5);
+
+        balances[senderID].balance += winnings;
+
+        resultMessage += `🎉 YOU WIN! 🎉\nWinnings: ${winnings} coins\nNew Balance: ${balances[senderID].balance} coins`;
+
+      } else {
+
+        resultMessage += `💔 YOU LOSE! 💔\nNew Balance: ${balances[senderID].balance} coins`;
+
+      }
+
+    } else if (choice === "rps") {
+
+      const userChoice = args[2] ? args[2].toLowerCase() : null;
+
+      if (!userChoice || !["rock", "paper", "scissors"].includes(userChoice)) {
+
+        balances[senderID].balance += bet;
+
+        saveBalance();
+
+        return api.sendMessage(
+
+          `✊ 『 𝗥𝗣𝗦 』 ✊\n\n❌ Please choose rock, paper, or scissors.\nExample: /games rps 1000 rock\nAttempts left: ${attemptsData[senderID].attempts}/6`,
+
+          threadID,
+
+          messageID
+
+        );
+
+      }
+
+      const botChoices = ["rock", "paper", "scissors"];
+
+      const winChance = Math.random();
+
+      let botChoice;
+
+      if (winChance < 0.5) {
+
+        const winConditions = {
+
+          rock: "scissors",
+
+          paper: "rock",
+
+          scissors: "paper",
+
+        };
+
+        botChoice = winConditions[userChoice];
+
+      } else {
+
+        const loseConditions = {
+
+          rock: "paper",
+
+          paper: "scissors",
+
+          scissors: "rock",
+
+        };
+
+        const possibleChoices = botChoices.filter(choice => choice !== loseConditions[userChoice]);
+
+        botChoice = possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
+
+      }
+
+      const emojis = {
+
+        rock: "✊",
+
+        paper: "✋",
+
+        scissors: "✂️",
+
+      };
+
+      resultMessage = "✊ 『 𝗥𝗣𝗦 』 ✊\n\n";
+
+      resultMessage += `You: ${emojis[userChoice]} vs Bot: ${emojis[botChoice]}\n\n`;
+
+      const winConditions = {
+
+        rock: "scissors",
+
+        paper: "rock",
+
+        scissors: "paper",
+
+      };
+
+      if (userChoice === botChoice) {
+
+        balances[senderID].balance += bet;
+
+        resultMessage += `🤝 IT'S A TIE! 🤝\nBalance: ${balances[senderID].balance} coins`;
+
+      } else if (winConditions[userChoice] === botChoice) {
+
+        winnings = bet * 2;
+
+        balances[senderID].balance += winnings;
+
+        resultMessage += `🎉 YOU WIN! 🎉\nWinnings: ${winnings} coins\nNew Balance: ${balances[senderID].balance} coins`;
+
+      } else {
+
+        resultMessage += `💔 YOU LOSE! 💔\nNew Balance: ${balances[senderID].balance} coins`;
+
+      }
+
+    }
+
+    if (attemptsData[senderID].attempts > 0) {
+
+      resultMessage += `\n\nAttempts left: ${attemptsData[senderID].attempts}/6`;
+
+    } else {
+
+      resultMessage += `\n\n❌ No attempts left! Wait 5 minutes to play again.`;
+
+    }
+
+    saveBalance();
+
+    await api.sendMessage(resultMessage, threadID, messageID);
+
+  },
 
 };

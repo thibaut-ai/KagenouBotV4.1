@@ -1,65 +1,89 @@
 module.exports = {
 
-    name: "rules",
+  name: 'rules',
 
-    author: "Aljur Pogoy",
+  category: 'Info',
 
-    description: "Displays the chatbot rules.",
+  description: 'Displays the chatbot rules for responsible usage.',
 
-    
+  author: 'Aljur Pogoy',
 
-    run: async ({ api, event }) => {
+  version: '3.0.0',
 
-        const { threadID, messageID } = event;
+  usage: '/rules',
 
-        const rules = [
+  run: async ({ api, event }) => {
 
-            "1. Be respectful to everyone, including the bot.",
+    const { threadID, messageID } = event;
 
-            "2. No spamming commands.",
+    const rules = [
 
-            "3. Avoid excessive use of capital letters.",
+      'Be respectful to everyone, including the bot.',
 
-            "4. Do not abuse the bot for trolling or harassment.",
+      'No spamming commands.',
 
-            "5. No NSFW (Not Safe for Work) content.",
+      'Avoid excessive use of capital letters.',
 
-            "6. Do not try to exploit bugs or glitches.",
+      'Do not abuse the bot for trolling or harassment.',
 
-            "7. Avoid excessive flooding (repeating messages rapidly).",
+      'No NSFW (Not Safe for Work) content.',
 
-            "8. Do not impersonate an admin or the bot.",
+      'Do not try to exploit bugs or glitches.',
 
-            "9. The bot is not responsible for any personal data shared.",
+      'Avoid excessive flooding (repeating messages rapidly).',
 
-            "10. Do not send links that may contain malicious content.",
+      'Do not impersonate an admin or the bot.',
 
-            "11. The bot has the right to mute or ban users who violate rules.",
+      'The bot is not responsible for any personal data shared.',
 
-            "12. Admins can update these rules anytime if needed.",
+      'Do not send links that may contain malicious content.',
 
-            "13. Do not request admin privileges through the bot.",
+      'The bot has the right to mute or ban users who violate rules.',
 
-            "14. No self-promotion, advertisements, or scams.",
+      'Admins can update these rules anytime if needed.',
 
-            "15. Follow all Facebook and Messenger community guidelines.",
+      'Do not request admin privileges through the bot.',
 
-            "16. The bot does not tolerate hate speech or discrimination.",
+      'No self-promotion, advertisements, or scams.',
 
-            "17. If the bot malfunctions, report to an admin instead of abusing it.",
+      'Follow all Facebook and Messenger community guidelines.',
 
-            "18. The bot cannot provide illegal or sensitive content.",
+      'The bot does not tolerate hate speech or discrimination.',
 
-            "19. Commands may be logged for security purposes.",
+      'If the bot malfunctions, report to an admin instead of abusing it.',
 
-            "20. Have fun and use the bot responsibly."
+      'The bot cannot provide illegal or sensitive content.',
 
-        ];
+      'Commands may be logged for security purposes.',
 
-        const message = `Cid Kagenou Bot Rules\n\n${rules.join("\n")}\n\nBreaking these rules may result in restrictions.`;
+      'Have fun and use the bot responsibly.',
 
-        api.sendMessage(message, threadID, messageID);
+    ];
 
-    }
+    // Format rules with numbering and emojis
+
+    const formattedRules = rules.map((rule, index) => `  | 『 ${index + 1}.』 ${rule}`).join('\n');
+
+    // Construct the message
+
+    let message = `====『 𝗖𝗜𝗗 𝗞𝗔𝗚𝗘𝗡𝗢𝗨 𝗕𝗢𝗧 𝗥𝗨𝗟𝗘𝗦 』====\n\n`;
+
+    message += `  ╭─╮\n`;
+
+    message += `  | 『 𝗜𝗡𝗙𝗢 』 Please follow these rules to ensure a positive experience:\n`;
+
+    message += `${formattedRules}\n`;
+
+    message += `  | 📜 Breaking these rules may result in restrictions.\n`;
+
+    message += `  ╰─────────────ꔪ\n\n`;
+
+    message += `> 𝗧𝗵𝗮𝗻𝗸 𝘆𝗼𝘂 𝗳𝗼𝗿 𝘂𝘀𝗶𝗻𝗴 𝗼𝘂𝗿 𝗖𝗶𝗱 𝗞𝗮𝗴𝗲𝗻𝗼𝘂 𝗯𝗼𝘁\n`;
+
+    message += `> 𝗙𝗼𝗿 𝗳𝘂𝗿𝘁𝗵𝗲𝗿 𝗮𝘀𝘀𝗶𝘀𝘁𝗮𝗻𝗰𝗲, 𝗰𝗼𝗻𝘁�_a𝗰𝘁: 𝗸𝗼𝗿𝗶𝘀𝗮𝘄𝗮𝘂𝗺𝘂𝘇𝗮𝗸𝗶@𝗴𝗺𝗮𝗶𝗹.𝗰𝗼𝗺`;
+
+    sendMessage(api, { threadID, message }, messageID);
+
+  },
 
 };

@@ -3,6 +3,10 @@ module.exports = {
     name: 'addadmin',
 
     category: 'Admin',
+    description: 'Add admins to bot',
+    author: 'aljur pogoy',
+    version: '3.0.0',
+    usage: '${prefix} addadmin <uid>',
 
     execute: async (api, event, args, commands, prefix, admins, appState, sendMessage) => {
 
