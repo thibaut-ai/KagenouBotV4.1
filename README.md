@@ -1,197 +1,186 @@
-# Introduction 
-## The Seven Shadows
 
-The Seven Shadows are Cid Kagenou's elite shadow organization.  Each member possesses unique skills and plays a crucial role in Cid's plans.
+# KagenouBot V3 - The Seven Shadows
 
-| King of Shadow garden | Image             | Description                                                                        |
-|--------------|----------------------|------------------------------------------------------------------------------------|
-| Cid Kagenou (King)        | ![Shadow](image/Shadow.jpg) | Cid Kagenou a.k.a shadow is the king of shadow garden and the seven shadows, and his loyal comrades Alpha is the strongest leader in Seven shadows.                                   |
+Welcome to **KagenouBot V3**, an elite Facebook Messenger bot inspired by *The Eminence in Shadow*. This multi-system bot is built with flexibility, speed, and customization in mind. Featuring unique command systems like **Tokito-System**, **Jinwoo-System**, **VIP-System**, and **Cid-Kagenou-System**, KagenouBot is your ultimate companion in automating and enhancing chat experiences.
 
-| Member Name | Image             | Description                                                                        |
-|--------------|----------------------|------------------------------------------------------------------------------------|
-| Alpha (Leader)       | ![Alpha](image/Alpha.jpg) | [Alpha is the strongest of the Seven Shadow Garden, a powerful magic swordsman. He's a loyal and determined individual, always putting the well-being of his comrades first. However, his true strength is hidden beneath a seemingly playful and carefree exterior.]                                            |
-| Beta         | ![Beta](image/Beta.jpg)  | [Beta is the brains of the group, a skilled strategist and an expert in magic. She's known for her calm and collected demeanor, but she can also be incredibly ruthless when necessary.] |
-| Gamma        | ![Gamma](image/Gamma.jpg) | [Gamma is a master of martial arts, wielding her fists with incredible speed and power. She's fiercely independent and often acts as the voice of reason within the Seven Shadow Garden.]|
-| Delta        | ![Delta](image/Delta.jpg) | [Delta is a skilled archer and marksman, known for her pinpoint accuracy. She's fiercely loyal to her comrades and will stop at nothing to protect them.]|
-| Epsilon      | ![Epsilon](image/Epsilon.jpg) | [Epsilon is a master of illusions and deception, capable of manipulating the minds of others. He's a cunning and manipulative individual, but he also has a strong sense of justice.]|
-| Zeta         | ![Zeta](image/Zeta.jpg)  | [Zeta is a master of stealth and infiltration, capable of moving through shadows undetected. She's a skilled assassin and a deadly opponent in close combat.] |
-| Eta          | ![Eta](image/Eta.jpg)   | [Eta is a skilled healer and a master of life magic. She's a kind and compassionate individual, always willing to help those in need.]  |
+---
 
-## License
-```
-MIT License
+## Introduction: The Seven Shadows
 
-Copyright (c) Date: January 20, 2025 | Name and Organization name Aljur Pogoy/GeoArchonsTeam
+The Seven Shadows are Cid Kagenou's elite shadow organization. Each member possesses unique skills and plays a crucial role in his grand schemes.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+### King of Shadow Garden
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-```
+| Name              | Image                      | Description |
+|-------------------|----------------------------|-------------|
+| Cid Kagenou (Shadow) | ![Shadow](image/Shadow.jpg) | Shadow is the king of the Seven Shadows and leader of Shadow Garden. A brilliant tactician and a true mastermind hidden behind a humble facade. |
 
-## Examples For making Comamnds
+### Members of the Seven Shadows
 
-```node.js
+| Member Name | Image                   | Description |
+|-------------|-------------------------|-------------|
+| Alpha       | ![Alpha](image/Alpha.jpg) | Alpha is the strongest and most loyal member, a powerful magic swordsman who leads the Seven Shadows. |
+| Beta        | ![Beta](image/Beta.jpg)  | The strategist and tactician of the group, calm and calculating. |
+| Gamma       | ![Gamma](image/Gamma.jpg) | A martial arts expert and voice of reason, swift and deadly in close combat. |
+| Delta       | ![Delta](image/Delta.jpg) | An expert archer known for her loyalty and deadly precision. |
+| Epsilon     | ![Epsilon](image/Epsilon.jpg) | Master of illusion and deception, clever and manipulative. |
+| Zeta        | ![Zeta](image/Zeta.jpg)  | A stealthy assassin skilled in infiltration and hand-to-hand combat. |
+| Eta         | ![Eta](image/Eta.jpg)   | A compassionate healer and expert in life magic. |
+
+---
+
+## Command System Examples
+
+### Basic Command Format
+
+```js
 module.exports = {
   name: 'test',
   category: 'Test',
   execute: async (api, event, args, commands, prefix, admins, appState, sendMessage) => {
-    const { threadID } = event;
-    sendMessage(api, { threadID, message: 'This is a test command!' });
+    sendMessage(api, { threadID: event.threadID, message: 'This is a test command!' });
   },
 };
 ```
-## To create an command for tokito-system, this system is request from Francis Ownersv2 
-```node.js
+
+### Tokito-System Command
+
+```js
 module.exports = {
-
   manifest: {
-
-    name: "ping", 
-
-    aliases: ["p"], 
-
-    developer: "YourName", 
-
+    name: "ping",
+    aliases: ["p"],
+    developer: "YourName",
     description: "Responds with Pong!",
-
-    usage: "/ping", 
-
+    usage: "/ping",
     config: {
-
       botAdmin: false,
-
       botModerator: false,
-
       noPrefix: false,
-
       privateOnly: false
-
     }
-
   },
 
   async deploy({ chat }) {
-
-    chat.send("Pong! 🏓");
-
+    chat.send("Pong! ðŸ“");
   }
-
 };
 ```
-## Coming soon, Jinwoo-system this will release on KagenouBotV3
-```node.js
-const axios = require("axios");
 
+### Jinwoo-System (Coming Soon in KagenouBotV3)
+
+```js
 module.exports = {
+  config: {
+    name: "ping",
+    description: "Check bot response time.",
+    usage: "/ping",
+    hasPermission: 0
+  },
+
+  onStart: async function ({ api, event }) {
+    const start = Date.now();
+    api.sendMessage("ðŸ“ Pinging...", event.threadID, (err, info) => {
+      if (err) return;
+      const ping = Date.now() - start;
+      api.editMessage(`ðŸ“ Pong! Response time: ${ping}ms`, info.messageID);
+    });
+  }
+};
+```
+
+### VIP-System Command
+
+```js
+module.exports = {
+  name: "ping",
+  run: async ({ api, event }) => {
+    api.sendMessage("Pong!", event.threadID);
+  }
+};
+```
+
+### Cid-Kagenou-System Command
+
+```js
+module.exports = {
+  onChat: {
+    name: "ping",
+    aliases: ["latency", "pong"],
+    developer: "Aljur Pogoy",
+    description: "Check the bot's response time.",
+    usage: "ping",
     config: {
-        name: "ping",
-        description: "Check bot response time.",
-        usage: "/ping",
-        hasPermission: 0
+      cidControl: false,
+      alphaControl: false,
+      deltaControl: false,
+      zetaControl: false
     },
+  },
 
-    onStart: async function ({ api, event }) {
-        const { threadID, messageID } = event;
-        const start = Date.now();
-
-        api.sendMessage("🏓 Pinging...", threadID, (err, info) => {
-            if (err) return;
-
-            const end = Date.now();
-            const ping = end - start;
-
-            api.editMessage(`🏓 Pong! Response time: ${ping}ms`, info.messageID);
-        });
-    }
-};
-```
-## To create an command for second-system which is the VIP system
-```node.js
-module.exports = {
-
-    name: "ping",
-
-    run: async ({ api, event }) => {
-
-        api.sendMessage("Pong!", event.threadID);
-
-    }
-
-};
-```
-## To create an command for cid-kagenou-system
-```node.js
-const axios = require("axios");
-
-module.exports = {
-    onChat: {
-        name: "ping",
-        aliases: ["latency", "pong"],
-        developer: "Aljur Pogoy",
-        description: "Check the bot's response time.",
-        usage: "ping",
-        config: {
-            cidControl: false,
-            alphaControl: false,
-            deltaControl: false,
-            zetaControl: false
-        },
-    },
-
-    async deploy({ cid }) {
-        const start = Date.now();
-
-        const message = await cid.kagenou("🏓 Pinging...");
-        const end = Date.now();
-
-        const ping = end - start;
-        cid.kagenou(`🏓 Pong! Response time: ${ping}ms`);
-    }
-};
-```
-## To handle the non-prefix comamnd
-```node.js
-if (commandName === 'prefix' && commands.has('prefix')) {
-        const command = commands.get('prefix');
-// In another way
-module.exports = {
-    name: "ping",
-    nonPrefix: true, // Handle the nonPrefix commands
-     async run ({ api, event }) => {
-
-        api.sendMessage("Pong!", event.threadID);
-
-    }
-
+  async deploy({ cid }) {
+    const start = Date.now();
+    await cid.kagenou("ðŸ“ Pinging...");
+    const ping = Date.now() - start;
+    cid.kagenou(`ðŸ“ Pong! Response time: ${ping}ms`);
+  }
 };
 ```
 
-## Put your uid in config.json
-```node.js
+---
+
+## Configuration Guide
+
+### config.json
+```json
 {
-  "admins": ["100073129302064","100080383844941","61560407754490"]
+  "admins": ["100073129302064", "100080383844941", "61560407754490"]
 }
 ```
-## Put your appstate on appstate.json file (recommend not to use your main account)
-```node.js
+
+### appstate.json
+> Put your appstate credentials here. **(Not recommended to use your main account)**
+
+```json
 {}
 ```
 
-## To Run the Kagenou Bot, login first in [Render](render.com)
- ```
-npm start or npm install
+---
+
+## Running the Bot
+
+### Installation
+
 ```
-## Start Comamnd
+npm install
+```
+
+### Start Bot
+
 ```
 node index.js
 ```
 
-# Credits to ws3-fca 
-ws3-fca [Click Here](https://www.npmjs.com/package/ws3-fca)
+> Login required via [Render](https://render.com)
 
+---
+
+## License
+
+```
+MIT License
+
+Copyright (c) January 20, 2025
+Aljur Pogoy / GeoArchonsTeam
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software to use, copy, modify, distribute, and publish as needed.
+```
+
+---
+
+## Credits
+
+- **ws3-fca** - [Visit NPM](https://www.npmjs.com/package/ws3-fca)
+- **Shadow Garden Lore** - Inspired by *The Eminence in Shadow*
+- **Bot Devs** - Aljur Pogoy and GeoArchonsTeam
