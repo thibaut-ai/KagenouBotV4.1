@@ -1,7 +1,7 @@
 module.exports = {
   name: "save",
   author: "Aljur Pogoy",
-  version: "1.0.0",
+  version: "3.0.0",
   description: "Save a name or list saved names. Usage: #save <name> or #save list",
   async run({ api, event, args }) {
     const { threadID, messageID, senderID } = event;
