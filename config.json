@@ -1,14 +1,11 @@
 {
     "admins": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "100073129302064"
     ],
     "Prefix": [
-        "/"
+        "#"
     ],
-    "botName": "Bot Name here"
+    "botName": "KagenouBotV2",
+    
+    "mongoUri": "mongodb+srv://aljurdev:aljurdev112233@cluster0.shw5rft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 }
