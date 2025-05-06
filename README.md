@@ -80,10 +80,10 @@ module.exports = {
 
   onStart: async function ({ api, event }) {
     const start = Date.now();
-    api.sendMessage("ðŸ“ Pinging...", event.threadID, (err, info) => {
+    api.sendMessage("Pinging...", event.threadID, (err, info) => {
       if (err) return;
       const ping = Date.now() - start;
-      api.editMessage(`ðŸ“ Pong! Response time: ${ping}ms`, info.messageID);
+      api.editMessage(` Pong! Response time: ${ping}ms`, info.messageID);
     });
   }
 };
