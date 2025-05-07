@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./utils/logo.jpg" alt="Image description" />
+  <img src="./utils/cyberpunk.gif" alt="Image description" />
 </p>
 
 
