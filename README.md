@@ -1,8 +1,15 @@
 
-# KagenouBot V3 - The Seven Shadows
+# KagenouBot V3 This is Beta Teaser - The Seven Shadows
 
 Welcome to **KagenouBot V3**, an elite Facebook Messenger bot inspired by *The Eminence in Shadow*. This multi-system bot is built with flexibility, speed, and customization in mind. Featuring unique command systems like **Tokito-System**, **Jinwoo-System**, **VIP-System**, and **Cid-Kagenou-System**, KagenouBot is your ultimate companion in automating and enhancing chat experiences.
 
+# Introduce the contributors of our KagenouBotV3 Beta Teaser 
+
+**Liane Cagara** — she was the one who really advice me to create and adjust functions and to solve problems on code.
+
+**Frances Loyd Raval** — He is the one who helping to setup other systems and functions.
+
+**Kenneth Panio** — He is the one who really advice to modify systems and add functions.
 ---
 
 ## Introduction: The Seven Shadows
@@ -164,6 +171,7 @@ node index.js
 > Login required via [Render](https://render.com)
 
 ---
+
 
 ## License
 
