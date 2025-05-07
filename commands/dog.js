@@ -4,7 +4,7 @@ module.exports = {
 
     name: "dog",
 
-    author: "Your Name",
+    author: "Aljur pogoy",
 
     description: "Sends a dog video when triggered.",
 
@@ -19,7 +19,7 @@ module.exports = {
 
         if (/^dog/i.test(body)) {
 
-            const videoPath = `${__dirname}/nopPrefix/dog.mp4`;
+            const videoPath = `${__dirname}/cache/dog.mp4`;
 
             if (!fs.existsSync(videoPath)) {
 
