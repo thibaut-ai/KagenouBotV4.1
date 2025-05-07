@@ -17,7 +17,7 @@ module.exports = {
 
         if (/^allha/i.test(body)) {
 
-            const audioPath = `${__dirname}/nopPrefix/allha.mp3`;
+            const audioPath = `${__dirname}/cache/allha.mp3`;
 
             if (!fs.existsSync(audioPath)) {
 
