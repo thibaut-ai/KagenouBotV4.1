@@ -14,7 +14,10 @@ Welcome to **KagenouBot V3**, an elite Facebook Messenger bot inspired by *The E
 **Frances Loyd Raval** — He is the one who helping to setup other systems and functions.
 
 **Kenneth Panio** — He is the one who really advice to modify systems and add functions.
+
+
 ---
+
 
 ## Introduction: The Seven Shadows
 
