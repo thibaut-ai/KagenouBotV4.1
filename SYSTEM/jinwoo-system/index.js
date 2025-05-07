@@ -1,24 +1,68 @@
-const fs = require("fs");
+const fs = require("fs-extra");
 
 const path = require("path");
 
-const { status, shadow } = require("./config.json");
+const commandsDir = path.join(__dirname, "commands");
 
-const commands = new Map();
+const configPath = path.join(__dirname, "config.json");
 
-const inventoryPath = path.join(__dirname, "Inventory");
+let config = {};
 
-// Load all commands dynamically
+let commands = new Map();
 
-fs.readdirSync(inventoryPath).forEach(file => {
+let cooldowns = new Map(); 
 
-    if (file.endsWith(".js")) {
+try {
+
+    config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+
+} catch (error) {
+
+    console.error("❌ Error loading ownirsv2-system config.json:", error);
+
+}
+
+
+
+const getLang = (key, commandName, ...args) => {
+
+    const lang = config.language || "en"; // Default to English
+
+    const langData = commands.get(commandName)?.langs?.[lang] || {};
+
+    let text = langData[key] || key;
+
+    args.forEach((arg, i) => {
+
+        text = text.replace(`%${i + 1}`, arg);
+
+    });
+
+    return text;
+
+};
+
+
+
+const loadCommands = () => {
+
+    if (!fs.existsSync(commandsDir)) {
+
+        console.warn("⚠️ ownirsv2-system commands directory not found.");
+
+        return;
+
+    }
+
+    const commandFiles = fs.readdirSync(commandsDir).filter(file => file.endsWith(".js"));
+
+    for (const file of commandFiles) {
 
         try {
 
-            const command = require(path.join(inventoryPath, file));
+            const command = require(path.join(commandsDir, file));
 
-            if (command.config?.name) {
+            if (command.config && command.config.name && command.onStart) {
 
                 commands.set(command.config.name.toLowerCase(), command);
 
@@ -26,110 +70,137 @@ fs.readdirSync(inventoryPath).forEach(file => {
 
         } catch (error) {
 
-            console.error(`❌ Failed to load command ${file}:`, error);
+            console.error(`❌ Error loading ownirsv2-system command '${file}':`, error);
 
         }
 
     }
 
-});
+};
 
-console.log("✅ Jinwoo-System Loaded Successfully!");
+loadCommands();
 
-// Execute Commands
+console.log("✅ ownirsv2-system Commands loaded:", [...commands.keys()]);
 
-async function executeCommand({ api, event }) {
 
-    const { body, threadID, senderID, messageID } = event;
 
-    if (!body) return;
+const executeCommand = async ({ api, event, args }) => {
 
-    // Check if message starts with the prefix
+    const { body, threadID, senderID } = event;
 
-    if (!body.startsWith(status)) return;
+    if (!body) return false;
 
-    const args = body.slice(status.length).trim().split(/ +/);
+    const message = body.trim();
 
-    const commandName = args.shift().toLowerCase();
+    const prefix = config.prefix || "#"; // Default prefix if not set in config
 
-    if (!commands.has(commandName)) return;
+    if (!message.startsWith(prefix)) return false;
+
+    const commandName = message.slice(prefix.length).split(/ +/)[0].toLowerCase();
+
+    const commandArgs = message.slice(prefix.length).split(/ +/).slice(1);
 
     const command = commands.get(commandName);
 
-    // Check Permissions
+    if (!command) return false;
 
-    if (command.config.hasPermission > 0 && !shadow.includes(senderID)) {
+    const { config: cmdConfig } = command;
 
-        return api.sendMessage("⛔ You don't have permission to use this command!", threadID);
+    const cooldownKey = `${senderID}_${cmdConfig.name}`;
+
+    const now = Date.now();
+
+    const cooldownTime = (cmdConfig.countDown || 0) * 1000; // Cooldown in seconds
+
+    
+
+    if (cooldowns.has(cooldownKey)) {
+
+        const expiration = cooldowns.get(cooldownKey);
+
+        if (now < expiration) {
+
+            const timeLeft = Math.ceil((expiration - now) / 1000);
+
+            api.sendMessage(`⏳ Please wait ${timeLeft} second(s) before using "${cmdConfig.name}" again.`, threadID);
+
+            return true;
+
+        }
+
+    }
+
+   
+
+    if (cmdConfig.role && cmdConfig.role > 0) {
+
+        const isAdmin = config.admins?.includes(senderID);
+
+        if (!isAdmin) {
+
+            api.sendMessage(`❌ You don't have permission to use "${cmdConfig.name}".`, threadID);
+
+            return true;
+
+        }
 
     }
 
     try {
 
-        if (command.onStart) {
+       
 
-            const response = await command.onStart({ api, event, args });
+        if (cooldownTime > 0) {
 
-            // Ensure bot replies to user properly
+            cooldowns.set(cooldownKey, now + cooldownTime);
 
-            if (typeof response === "string") {
-
-                api.sendMessage(response, threadID, messageID);
-
-            }
-
-            console.log(`✅ Command executed: ${commandName} by ${senderID}`);
-
-        } else {
-
-            api.sendMessage("⚠️ This command has no onStart function.", threadID, messageID);
+            setTimeout(() => cooldowns.delete(cooldownKey), cooldownTime);
 
         }
+
+
+        const message = {
+
+            reply: (msg) => api.sendMessage(msg, threadID),
+
+            send: (msg) => api.sendMessage(msg, threadID)
+
+        };
+
+        
+
+        await command.onStart({
+
+            api,
+
+            event,
+
+            args: commandArgs,
+
+            message,
+
+            getLang: (key, ...args) => getLang(key, cmdConfig.name, ...args)
+
+        });
+
+        return true;
 
     } catch (error) {
 
-        api.sendMessage(" Error ", threadID, messageID);
+        api.sendMessage(`❌ Error executing ownirsv2-system command: ${error.message}`, threadID);
 
-        console.error(`❌ Error in command (${commandName}):`, error);
-
-    }
-
-}
-
-// Handle Chat-Based Commands (like AI interactions)
-
-async function handleChat({ api, event }) {
-
-    const { body, threadID, messageID } = event;
-
-    if (!body) return;
-
-    for (const command of commands.values()) {
-
-        if (command.onChat) {
-
-            try {
-
-                const response = await command.onChat({ api, event });
-
-                // Ensure bot replies to user properly
-
-                if (typeof response === "string") {
-
-                    api.sendMessage(response, threadID, messageID);
-
-                }
-
-            } catch (error) {
-
-                console.error(`❌ Error in onChat (${command.config?.name}):`, error);
-
-            }
-
-        }
+        return false;
 
     }
 
-}
+};
 
-module.exports = { executeCommand, handleChat };
+module.exports = {
+
+    executeCommand,
+
+    config,
+
+    commands
+
+};
