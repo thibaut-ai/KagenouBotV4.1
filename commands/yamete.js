@@ -4,7 +4,7 @@ module.exports = {
 
     name: "yamete",
 
-    author: "VanHung",
+    author: "Kagenou Moderators unit 1",
 
     description: "Plays 'Yamete' sound when triggered.",
 
@@ -20,7 +20,7 @@ module.exports = {
 
         if (/^yamete/i.test(body)) {
 
-            const audioPath = `${__dirname}/nopPrefix/yamate.mp3`;
+            const audioPath = `${__dirname}/cache/yamate.mp3`;
 
             if (!fs.existsSync(audioPath)) {
 
