@@ -1,5 +1,6 @@
-<img src="https://i.ibb.co/RQ28H2p/banner.png" alt="banner">
-<h1 align="center"><img src="./utils/logo.png" width="22px"> Goat Bot - Bot Chat Messenger</h1>
+<p align="center">
+  <img src="./utils/logo.jpg" alt="Image description" />
+</p>
 
 
 # KagenouBot V3 This is Beta Teaser - The Seven Shadows
