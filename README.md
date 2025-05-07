@@ -168,8 +168,43 @@ npm install
 node index.js
 ```
 
-> Login required via [Render](https://render.com)
 
+## What's New in KagenouBot V3
+
+### MongoDB Integration
+- KagenouBot V3 now includes MongoDB support for storing user data, command configurations, and bot settings.
+- Easily scale your bot's storage capacity and improve data persistence with MongoDB's robust database solutions.
+
+### Enhanced Reply Handling
+- Improved message reply detection, allowing for more precise and context-aware responses.
+- Optimized command processing for faster and more reliable message handling.
+
+### Modular Command Structure
+- Simplified command management with clearly organized command files and directories.
+- Support for multiple systems and command categories, including Jinwoo-System, Alpha-System, and GoatBot-System.
+
+### Improved Bot Performance
+- Faster command execution and reduced latency.
+- Optimized resource management for smoother operation.
+
+### Customizable Prefix and Permissions
+- Flexible command prefixes and role-based permissions for fine-tuned bot control.
+- Easy-to-edit configuration files for quick customization.
+
+
+## You can Deploy  on Render, and Bot-Hosting.net, and railway. *Note*: You can also deploy on pterodactyl Hosting.
+
+### Stpes on How to deploy on render
+
+**Step 1:** Fork ny repository
+
+**Step 2:** Login Dashboard on Render
+
+**Step 3:** Connect your GitHub or Google gmail
+
+**Stel 4:** Choose the repository, choose KagenouBotV3 and deploy.
+
+> Login required via [Render](https://render.com)
 ---
 
 
