@@ -247,8 +247,8 @@ node index.js
 **artifact-shop**
 
 
-## Adventure Rpg game 🗡️
-*commands*
+## Adventure Rpg game 🗡️ 
+
 
 **dungeon-fight**
 
