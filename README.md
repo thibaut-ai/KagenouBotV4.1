@@ -215,6 +215,53 @@ node index.js
 > Login required via [Render](https://render.com)
 ---
 
+## New RPG games ✨
+
+**Solo leveling rpg game 🗡️**
+*commands*
+
+**hunter**
+
+**arise**
+
+**arise-list**
+
+**hunter-inventory**
+
+**dungeon-fightv2**
+
+**shopv2**
+
+
+## Cid Kagenou rpg game 🗡️
+*commands*
+
+**shadow**
+
+**fight**
+
+**character-list**
+
+**character-choose**
+
+**artifact-shop**
+
+
+## Adventure Rpg game 🗡️
+*commands*
+
+**dungeon-fight**
+
+**shop**
+
+**blacksmith-shop**
+
+
+
+
+
+
+
 ## 🚧 **Requirement**
 - Node.js 22.x [Download](https://nodejs.org/dist/v22.0.0) | [Home](https://nodejs.org/en/download/) | [Other versions](https://nodejs.org/en/download/releases/)
 - Knowledge of **programming**, JavaScript, NodeJs
