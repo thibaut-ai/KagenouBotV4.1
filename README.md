@@ -80,7 +80,7 @@ module.exports = {
 
 ~~### Jinwoo-System (Coming Soon in KagenouBotV3)~~
 
-~~```js
+```js
 module.exports = {
   config: {
     name: "ping",
@@ -98,7 +98,7 @@ module.exports = {
     });
   }
 };
-``
+```
 
 ### VIP-System Command
 
