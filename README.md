@@ -192,7 +192,8 @@ node index.js
 - Easy-to-edit configuration files for quick customization.
 
 
-## You can Deploy  on Render, and Bot-Hosting.net, and railway. *Note*: You can also deploy on pterodactyl Hosting.
+## You can Deploy  on Render, and Bot-Hosting.net, and railway. 
+*Note*: You can also deploy on pterodactyl Hosting.
 
 ### Stpes on How to deploy on render
 
