@@ -264,21 +264,27 @@ const startListeningForMessages = (api) => {
     }
   });
 };
-
 const startListeningWithAutoRestart = (api) => {
+
   let listener = null;
 
   const restartListener = () => {
+
     if (listener) {
-      listener(); // Stop the current listener
+
+      listener(); 
+
     }
-    listener = startListeningForMessages(api);
 
- 
- 
+    listener = startListeningForMessages(api); 
 
- 
+  };
 
+  restartListener();
+
+  setInterval(restartListener, 3600000);
+
+};
 
 startBot();
 
