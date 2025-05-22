@@ -265,6 +265,21 @@ const startListeningForMessages = (api) => {
   });
 };
 
+const startListeningWithAutoRestart = (api) => {
+  let listener = null;
+
+  const restartListener = () => {
+    if (listener) {
+      listener(); // Stop the current listener
+    }
+    listener = startListeningForMessages(api);
+
+ 
+ 
+
+ 
+
+
 startBot();
 
 module.exports = { handleMessage };
