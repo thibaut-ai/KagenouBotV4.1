@@ -568,6 +568,8 @@ module.exports = {
           threadID,
           messageID
         );
+
+      // New Subcommands (50 additional)
       case "explore":
         const exploreExp = Math.floor(Math.random() * 30) + 10;
         const lootChance = Math.random();
