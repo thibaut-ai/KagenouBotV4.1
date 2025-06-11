@@ -1,11 +1,25 @@
 {
-    "admins": [
-        ""
-    ],
-    "Prefix": [
-        "#"
-    ],
-    "botName": "",
-    
-    "mongoUri": ""
+  "admins": [
+    "100090706983249"
+  ],
+  "moderators": [
+    "100090706983249",
+    "61576807594491",
+    "61551401520258",
+    "100040643049702",
+    "61554222594723",
+    "100075058221244",
+    "100035041790471",
+    "61576042859034",
+    "61564818644187",
+    "100090410466212"
+  ],
+  "developers": [
+    "100090706983249"
+  ],
+  "Prefix": [
+    "#"
+  ],
+  "botName": "KagenouBotV3",
+  "mongoUri": "mongodb+srv://aljurdev:aljurdev112233@cluster0.shw5rft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 }
