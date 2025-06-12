@@ -169,7 +169,7 @@ node index.js
 
 ### Stpes on How to deploy on render
 
-**Step 1:** Fork ny repository
+**Step 1:** Fork my repository
 
 **Step 2:** Login Dashboard on Render
 
