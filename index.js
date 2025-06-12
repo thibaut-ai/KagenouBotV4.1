@@ -1,3 +1,7 @@
+/**
+ * @author Aljur pogoy
+ * Thank you for using our Botfile ✨
+ */
 require("ts-node").register();
 require("./core/global");
 const { MongoClient } = require("mongodb");
