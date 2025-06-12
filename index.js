@@ -67,56 +67,6 @@ async function handleReply(api, event) {
   }
 }
 
-const installCommand = async (commandName, code, commandsDir, commandsMap) => {
-  try {
-    if (!commandName.endsWith(".js")) commandName += ".js";
-    const filePath = path.join(commandsDir, commandName);
-    fs.writeFileSync(filePath, code);
-    const commandModule = require(filePath);
-    const command = commandModule.default || commandModule;
-    if (!command.config || !command.config.name || !command.config.description || !command.run) {
-      fs.unlinkSync(filePath);
-      throw new Error("Invalid command structure. Must have config (name, description) and run function.");
-    }
-    commandsMap.set(command.config.name.toLowerCase(), command);
-    if (command.config.aliases) {
-      command.config.aliases.forEach(alias => commandsMap.set(alias.toLowerCase(), command));
-    }
-    delete require.cache[require.resolve(filePath)];
-    console.log(`[SYSTEM] Installed command: ${commandName}`);
-    return `✅ Installed command: ${commandName}`;
-  } catch (error) {
-    console.error(`[SYSTEM] Failed to install command ${commandName}:`, error);
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    return `❌ Failed to install command: ${error.message}`;
-  }
-};
-
-const unloadCommand = async (commandName, commandsDir, commandsMap) => {
-  try {
-    if (!commandName.endsWith(".js")) commandName += ".js";
-    const filePath = path.join(commandsDir, commandName);
-    if (!fs.existsSync(filePath)) {
-      return `❌ Command ${commandName} not found.`;
-    }
-    const commandModule = require(filePath);
-    const command = commandModule.default || commandModule;
-    commandsMap.delete(command.config.name.toLowerCase());
-    if (command.config.aliases) {
-      command.config.aliases.forEach(alias => commandsMap.delete(alias.toLowerCase()));
-    }
-    fs.unlinkSync(filePath);
-    delete require.cache[require.resolve(filePath)];
-    console.log(`[SYSTEM] Unloaded command: ${commandName}`);
-    return `✅ Unloaded command: ${commandName}`;
-  } catch (error) {
-    console.error(`[SYSTEM] Failed to unload command ${commandName}:`, error);
-    return `❌ Failed to unload command: ${error.message}`;
-  }
-};
-
-global.installCommand = (commandName, code, commandsDir) => installCommand(commandName, code, commandsDir, commands);
-global.unloadCommand = (commandName, commandsDir) => unloadCommand(commandName, commandsDir, commands);
 
 const loadCommands = () => {
   const retroGradient = require("gradient-string").retro;
@@ -135,30 +85,6 @@ const loadCommands = () => {
         commands.set(command.name.toLowerCase(), command);
         if (command.aliases) command.aliases.forEach(alias => commands.set(alias.toLowerCase(), command));
         if (command.nonPrefix) nonPrefixCommands.set(command.name.toLowerCase(), command);
-      }
-      // Handle minimal Goat-Bot-V2 command structure
-      if (command.config && command.config.name && command.onStart) {
-        const goatConfig = {
-          name: command.config.name,
-          description: command.config.description || "No description",
-          role: command.config.role || 0,
-          cooldown: command.config.countDown || 0,
-          nonPrefix: command.config.nonPrefix || false,
-          aliases: command.config.aliases || [],
-        };
-        commands.set(command.config.name.toLowerCase(), {
-          config: goatConfig,
-          run: async ({ api, event, args }) => {
-            try {
-              await command.onStart({ api, event, args, message: { reply: (text, callback) => api.sendMessage(text, event.threadID, callback) } });
-            } catch (error) {
-              console.error(`[COMMAND ERROR] Failed to execute '${command.config.name}':`, error);
-              api.sendMessage(`Error executing command '${command.config.name}': ${error.message}`, event.threadID, event.messageID);
-            }
-          },
-        });
-        if (goatConfig.aliases) goatConfig.aliases.forEach(alias => commands.set(alias.toLowerCase(), commands.get(command.config.name.toLowerCase())));
-        if (goatConfig.nonPrefix) nonPrefixCommands.set(command.config.name.toLowerCase(), commands.get(command.config.name.toLowerCase()));
       }
       if (command.handleEvent) eventCommands.push(command);
     } catch (error) {
