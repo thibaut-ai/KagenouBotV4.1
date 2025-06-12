@@ -45,7 +45,7 @@ The Seven Shadows are Cid Kagenou's elite shadow organization. Each member posse
 
 ## Command System Examples
 
-### Basic Command Format
+### Basic Command Format, execute async()
 
 ```js
 module.exports = {
@@ -56,90 +56,25 @@ module.exports = {
   },
 };
 ```
-
-### Tokito-System Command
-
-```js
-module.exports = {
-  manifest: {
-    name: "ping",
-    aliases: ["p"],
-    developer: "YourName",
-    description: "Responds with Pong!",
-    usage: "/ping",
-    config: {
-      botAdmin: false,
-      botModerator: false,
-      noPrefix: false,
-      privateOnly: false
-    }
-  },
-
-  async deploy({ chat }) {
-    chat.send("Pong! ðŸ“");
-  }
-};
-```
-
-~~### Jinwoo-System (Coming Soon in KagenouBotV3)~~
+## Basic Command format, async run({})
 
 ```js
 module.exports = {
   config: {
     name: "ping",
-    description: "Check bot response time.",
-    usage: "/ping",
-    hasPermission: 0
+    description: "Responds with Pong!",
+    role: 0,
+    cooldown: 5,
+    aliases: ["p"],
   },
-
-  onStart: async function ({ api, event }) {
-    const start = Date.now();
-    api.sendMessage("Pinging...", event.threadID, (err, info) => {
-      if (err) return;
-      const ping = Date.now() - start;
-      api.editMessage(` Pong! Response time: ${ping}ms`, info.messageID);
-    });
-  }
-};
-```
-
-### VIP-System Command
-
-```js
-module.exports = {
-  name: "ping",
-  run: async ({ api, event }) => {
-    api.sendMessage("Pong!", event.threadID);
-  }
-};
-```
-
-### Cid-Kagenou-System Command
-
-```js
-module.exports = {
-  onChat: {
-    name: "ping",
-    aliases: ["latency", "pong"],
-    developer: "Aljur Pogoy",
-    description: "Check the bot's response time.",
-    usage: "ping",
-    config: {
-      cidControl: false,
-      alphaControl: false,
-      deltaControl: false,
-      zetaControl: false
-    },
+  async run({ api, event }) {
+    const { threadID, messageID } = event;
+    await api.sendMessage("Pong!", threadID);
   },
-
-  async deploy({ cid }) {
-    const start = Date.now();
-    await cid.kagenou("ðŸ“ Pinging...");
-    const ping = Date.now() - start;
-    cid.kagenou(`ðŸ“ Pong! Response time: ${ping}ms`);
-  }
 };
 ```
+
+
 
 ---
 
@@ -179,7 +114,7 @@ node index.js
 ## What's New in KagenouBot V3
 
 ### MongoDB Integration
-- KagenouBot V3 now includes MongoDB support for storing user data, command configurations, and bot settings.
+- KagenouBot V4.1 now includes MongoDB support for storing user data, command configurations, and bot settings.
 - Easily scale your bot's storage capacity and improve data persistence with MongoDB's robust database solutions.
 
 ### Enhanced Reply Handling
@@ -214,24 +149,6 @@ node index.js
 
 > Login required via [Render](https://render.com)
 ---
-
-## New RPG games ✨
-
-**Solo leveling rpg game 🗡️**
-*commands*
-
-**hunter**
-
-**arise**
-
-**arise-list**
-
-**hunter-inventory**
-
-**dungeon-fightv2**
-
-**shopv2**
-
 
 ## Cid Kagenou rpg game 🗡️
 *commands*
