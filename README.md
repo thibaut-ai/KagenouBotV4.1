@@ -5,7 +5,7 @@
 
 # Official KagenouBot Ver 4.0.0
 
-Welcome to **KagenouBot V3**, an elite Facebook Messenger bot inspired by *The Eminence in Shadow*. This multi-system bot is built with flexibility, speed, and customization in mind. KagenouBot is your ultimate companion in automating and enhancing chat experiences.
+Welcome to **Official version of KagenouBot ver 4.0.0**, an elite Facebook Messenger bot inspired by *The Eminence in Shadow*. This multi-system bot is built with flexibility, speed, and customization in mind. KagenouBot is your ultimate companion in automating and enhancing chat experiences.
 
 # Introduce the contributors of our KagenouBotV3 Beta Teaser 
 
@@ -74,6 +74,36 @@ module.exports = {
 };
 ```
 
+
+# KagenouBot Ver 4.0.0 is now have own styler, inspired by cassidy-styler, but similar to cassidy-styler.
+
+### Usage;
+```js
+const msg = AuroraBetaStyler.format({
+
+        title: "SkyCastle",
+
+        emoji: "🏰",
+
+        titlefont: "bold",
+
+        content: content,
+
+        contentfont: "fancy", // you can just change to any fonts
+
+        footer: "Developed by: **Aljur pogoy**"
+
+});
+
+console.log(msg)
+
+/* ❲ 🏰 ❳ 𝗦𝗸𝘆𝗖𝗮𝘀𝘁𝗹𝗲
+━━━━━━━━━━━━━━━
+𝒜 𝒸𝒶𝓈𝓉𝓁ℯ
+━━━━━━━━━━━━━━━
+Developed by: 𝗔𝗹𝗷𝘂𝗿 𝗽𝗼𝗴𝗼𝘆
+*/
+```
 
 
 ---
@@ -150,33 +180,6 @@ node index.js
 > Login required via [Render](https://render.com)
 ---
 
-## Cid Kagenou rpg game 🗡️
-*commands*
-
-**shadow**
-
-**fight**
-
-**character-list**
-
-**character-choose**
-
-**artifact-shop**
-
-
-## Adventure Rpg game 🗡️ 
-
-
-**dungeon-fight**
-
-**shop**
-
-**blacksmith-shop**
-
-
-
-
-
 
 
 ## 🚧 **Requirement**
@@ -200,6 +203,5 @@ of this software to use, copy, modify, distribute, and publish as needed.
 
 ## Credits
 
-- **ws3-fca** - [Visit NPM](https://www.npmjs.com/package/ws3-fca)
 - **Shadow Garden Lore** - Inspired by *The Eminence in Shadow*
 - **Bot Devs** - Aljur Pogoy and GeoArchonsTeam
