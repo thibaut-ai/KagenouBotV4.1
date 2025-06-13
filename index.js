@@ -466,7 +466,7 @@ app.get('/portfolio', (req, res) => {
   if (!global.client) {
     return res.status(500).json({ error: 'Bot is not running' });
   }
-  const botUID = global.client.getCurrentUserID();
+  const botUID = api.getCurrentUserID();
   const botName = config.botName || 'Shadow Garden Bot';
   res.json({
     uid: botUID,
