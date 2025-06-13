@@ -32,7 +32,7 @@ module.exports = {
 
         headerText: "Python Command",
 
-        headerSymbol: "ðŸ",
+        headerSymbol: "🐍",
 
         headerStyle: "bold",
 
@@ -66,7 +66,7 @@ module.exports = {
 
         headerText: "Security Alert",
 
-        headerSymbol: "âŒ",
+        headerSymbol: "❌",
 
         headerStyle: "bold",
 
@@ -90,7 +90,7 @@ module.exports = {
 
         headerText: "Anti-Spam Alert",
 
-        headerSymbol: "âŒ",
+        headerSymbol: "❌",
 
         headerStyle: "bold",
 
@@ -114,7 +114,7 @@ module.exports = {
 
         headerText: "Anti-Spam Alert",
 
-        headerSymbol: "âŒ",
+        headerSymbol: "❌",
 
         headerStyle: "bold",
 
@@ -138,7 +138,7 @@ module.exports = {
 
         headerText: "Anti-Spam Alert",
 
-        headerSymbol: "âŒ",
+        headerSymbol: "❌",
 
         headerStyle: "bold",
 
@@ -176,7 +176,7 @@ module.exports = {
 
           headerText: "Anti-Spam Alert",
 
-          headerSymbol: "âŒ",
+          headerSymbol: "❌",
 
           headerStyle: "bold",
 
@@ -196,13 +196,13 @@ module.exports = {
 
       if (stdout) {
 
-        responseMessage += `âœ… Python Output:\n${stdout.trim()}\n`;
+        responseMessage += `✅ Python Output:\n${stdout.trim()}\n`;
 
       }
 
       if (stderr) {
 
-        responseMessage += `âš  Python Error:\n${stderr.trim()}\n`;
+        responseMessage += `⚠ Python Error:\n${stderr.trim()}\n`;
 
       }
 
@@ -210,11 +210,11 @@ module.exports = {
 
         headerText: "Python Execution",
 
-        headerSymbol: "ðŸ",
+        headerSymbol: "🐍",
 
         headerStyle: "bold",
 
-        bodyText: responseMessage || "âœ… Code executed with no output.",
+        bodyText: responseMessage || "✅ Code executed with no output.",
 
         bodyStyle: "bold",
 
@@ -242,7 +242,7 @@ module.exports = {
 
         headerText: "Compilation Error",
 
-        headerSymbol: "âŒ",
+        headerSymbol: "❌",
 
         headerStyle: "bold",
 
@@ -256,7 +256,7 @@ module.exports = {
 
       await api.sendMessage(styledMessage, threadID, messageID);
 
-      await api.setMessageReaction("âŒ", messageID, () => {});
+      await api.setMessageReaction("❌", messageID, () => {});
 
     }
 
