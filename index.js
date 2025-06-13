@@ -456,3 +456,53 @@ const startBot = async () => {
 startBot(); 
 
 /* Developed by Aljur pogoy */
+
+const express = require('express');
+const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'dashboard')));
+app.post('/config', (req, res) => {
+  const { appstate, commands, adminUid, prefix } = req.body;
+  if (!appstate || !adminUid || !prefix) {
+    return res.status(400).send('Missing required fields');
+  }
+  try {
+    const appstateData = JSON.parse(appstate);
+    fs.writeFileSync(path.join(__dirname, 'appstate.dev.json'), JSON.stringify(appstateData, null, 2));
+    let configData = {};
+    const configFilePath = path.join(__dirname, 'config.json');
+    if (fs.existsSync(configFilePath)) {
+      configData = JSON.parse(fs.readFileSync(configFilePath, 'utf8'));
+    }
+    configData.admins = [adminUid];
+    configData.Prefix = [prefix];
+    fs.writeFileSync(configFilePath, JSON.stringify(configData, null, 2));
+    appState = appstateData;
+    config = {
+      admins: configData.admins || [],
+      moderators: configData.moderators || [],
+      developers: configData.developers || [],
+      Prefix: Array.isArray(configData.Prefix) && configData.Prefix.length > 0 ? configData.Prefix : ["#"],
+      botName: configData.botName || "Shadow Garden Bot",
+      mongoUri: configData.mongoUri || null,
+      ...configData,
+    };
+
+    
+    reloadCommands();
+
+    res.send('Configuration updated successfully');
+  } catch (error) {
+    res.status(500).send(`Error: ${error.message}`);
+  }
+});
+app.get('/commands', (req, res) => {
+  const commandNames = Array.from(commands.keys()); 
+  res.json(commandNames);
+});
+
+const dashboardPort = 3000;
+app.listen(dashboardPort, () => {
+  console.log(`[DASHBOARD] Dashboard running on http://localhost:${dashboardPort}`);
+});
