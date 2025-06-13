@@ -550,3 +550,4 @@ const dashboardPort = 3000;
 app.listen(dashboardPort, () => {
   console.log(`[DASHBOARD] Dashboard running on http://localhost:${dashboardPort}`);
 });
+startBot();
