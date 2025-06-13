@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>KagenouBot Dashboard</title>
+    <title>ᯓ★ 𝗔𝗨𝗧𝗢𝗕𝗢𝗧</title>
     <meta name="description" content="Configure your Shadow Garden Bot with personalized settings and command selections.">
     <meta property="og:image" content="https://i.imgur.com/jPAVdEs.jpeg">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -34,8 +34,8 @@
         </div>
     </nav>
     <div class="container">
-        <h1 class="col text-center" style="font-size: 20px; padding: 10px;">KagenouBot Dashboard </h1>
-        <p style="font-size: 10px; text-align: center;">Version: 4.0.0</p>
+        <h1 class="col text-center" style="font-size: 20px; padding: 10px;">AUTO-BOT MESSENGER</h1>
+        <p style="font-size: 10px; text-align: center;">Version: 1.0.1</p>
         <form id="configForm">
             <div class="row">
                 <div class="col-md-12">
@@ -74,7 +74,7 @@
         <br>
         <button id="scrollUpBtn"><i class="fa-solid fa-angles-up"></i></button>
         <div class="footer">
-            <p>© 2025 Aljur pogoy | All rights reserved.</p>
+            <p>© 2024 Kaizenji | All rights reserved.</p>
             <p>Time: <span id="time"></span> | Ping: <span id="ping"></span></p>
         </div>
     </div>
@@ -92,6 +92,7 @@
             }
             scrollToSection('adminOfCommands');
         }
+
         function submitConfig() {
             const appstate = document.getElementById('appstate').value.trim();
             const commands = Array.from(document.getElementById('commands').selectedOptions).map(option => option.value);
@@ -104,9 +105,14 @@
             }
 
             try {
-                JSON.parse(appstate); 
+                JSON.parse(appstate);
             } catch (e) {
                 showResult('Invalid JSON format in appstate.', 'error');
+                return;
+            }
+
+            if (!appstate.toLowerCase().includes('appstate')) {
+                showResult('Appstate must contain "appstate" to run the bot.', 'error');
                 return;
             }
 
@@ -120,9 +126,19 @@
             })
             .then(response => response.text())
             .then(result => {
-                showResult(result, response.ok ? 'success' : 'error');
+                checkBotStatus(result);
             })
             .catch(error => showResult(`Error: ${error.message}`, 'error'));
+        }
+
+        function checkBotStatus(result) {
+            fetch('/bot-status')
+                .then(response => response.json())
+                .then(data => {
+                    const status = data.running ? '✅ Bot is running!' : '⚠ Bot is not running.';
+                    showResult(`${result}\n${status}`, data.running ? 'success' : 'error');
+                })
+                .catch(error => showResult(`Error checking bot status: ${error.message}`, 'error'));
         }
 
         function showResult(message, type) {
@@ -132,9 +148,11 @@
             result.style.display = 'block';
             setTimeout(() => result.style.display = 'none', 5000);
         }
+
         document.getElementById('appstate').addEventListener('input', function() {
             document.getElementById('submitButton').disabled = !this.value.trim();
         });
+
         fetch('/commands')
             .then(response => response.json())
             .then(commandNames => {
@@ -157,6 +175,7 @@
                     commandsSelect.appendChild(option);
                 });
             });
+
         window.addEventListener('scroll', () => {
             const scrollUpBtn = document.getElementById('scrollUpBtn');
             if (window.scrollY > 300) {
@@ -171,6 +190,7 @@
         document.getElementById('scrollUpBtn').addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
+
         function updateTime() {
             const now = new Date();
             document.getElementById('time').textContent = now.toLocaleTimeString();
@@ -178,7 +198,6 @@
         setInterval(updateTime, 1000);
         updateTime();
 
-        
         document.getElementById('ping').textContent = 'N/A';
     </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
