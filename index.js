@@ -86,7 +86,7 @@ const loadCommands = () => {
       } else if (command.name) {
         commands.set(command.name.toLowerCase(), command);
         if (command.aliases) command.aliases.forEach(alias => commands.set(alias.toLowerCase(), command));
-        if (command.nonPrefix) nonPrefixCommands.set(command.config.name.toLowerCase(), command);
+        if (command.nonPrefix) nonPrefixCommands.set(command.name.toLowerCase(), command);
       }
       if (command.handleEvent) eventCommands.push(command);
     } catch (error) {
@@ -499,11 +499,15 @@ app.post('/config', (req, res) => {
     // Reload commands
     reloadCommands();
 
-    // Save selected commands (optional, if you want to enable/disable them)
+    // Optionally save selected commands, create botfile directory if it doesn't exist
+    const botfilePath = path.join(__dirname, 'botfile');
     if (commands && commands.length > 0) {
+      if (!fs.existsSync(botfilePath)) {
+        fs.mkdirSync(botfilePath, { recursive: true });
+      }
       const commandSelections = {};
       commands.forEach(cmd => { commandSelections[cmd] = true; });
-      fs.writeFileSync(path.join(__dirname, 'botfile', 'commandSelections.json'), JSON.stringify(commandSelections, null, 2));
+      fs.writeFileSync(path.join(botfilePath, 'commandSelections.json'), JSON.stringify(commandSelections, null, 2));
     }
 
     // Start the bot if not already running
