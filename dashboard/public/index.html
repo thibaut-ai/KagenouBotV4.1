@@ -111,11 +111,6 @@
                 return;
             }
 
-            if (!appstate.toLowerCase().includes('appstate')) {
-                showResult('Appstate must contain "appstate" to run the bot.', 'error');
-                return;
-            }
-
             fetch('/config', {
                 method: 'POST',
                 headers: {
@@ -135,7 +130,7 @@
             fetch('/bot-status')
                 .then(response => response.json())
                 .then(data => {
-                    const status = data.running ? '✅ Bot is running!' : '⚠ Bot is not running.';
+                    const status = data.running ? '✅ Bot is running with prefix ' + (document.getElementById('inputOfPrefix').value.trim() || '/') + '!' : '⚠ Bot is not running.';
                     showResult(`${result}\n${status}`, data.running ? 'success' : 'error');
                 })
                 .catch(error => showResult(`Error checking bot status: ${error.message}`, 'error'));
