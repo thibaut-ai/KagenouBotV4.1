@@ -74,7 +74,7 @@
         <br>
         <button id="scrollUpBtn"><i class="fa-solid fa-angles-up"></i></button>
         <div class="footer">
-            <p>© 2024 Kaizenji | All rights reserved.</p>
+            <p>© 2025 Aljur pogoy | All rights reserved.</p>
             <p>Time: <span id="time"></span> | Ping: <span id="ping"></span></p>
         </div>
     </div>
@@ -92,8 +92,6 @@
             }
             scrollToSection('adminOfCommands');
         }
-
-        // Submit function
         function submitConfig() {
             const appstate = document.getElementById('appstate').value.trim();
             const commands = Array.from(document.getElementById('commands').selectedOptions).map(option => option.value);
@@ -106,7 +104,7 @@
             }
 
             try {
-                JSON.parse(appstate); // Validate JSON
+                JSON.parse(appstate); 
             } catch (e) {
                 showResult('Invalid JSON format in appstate.', 'error');
                 return;
@@ -134,13 +132,9 @@
             result.style.display = 'block';
             setTimeout(() => result.style.display = 'none', 5000);
         }
-
-        // Enable submit button when appstate is filled
         document.getElementById('appstate').addEventListener('input', function() {
             document.getElementById('submitButton').disabled = !this.value.trim();
         });
-
-        // Populate commands
         fetch('/commands')
             .then(response => response.json())
             .then(commandNames => {
@@ -163,8 +157,6 @@
                     commandsSelect.appendChild(option);
                 });
             });
-
-        // Scroll button functionality
         window.addEventListener('scroll', () => {
             const scrollUpBtn = document.getElementById('scrollUpBtn');
             if (window.scrollY > 300) {
@@ -179,8 +171,6 @@
         document.getElementById('scrollUpBtn').addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
-
-        // Update time
         function updateTime() {
             const now = new Date();
             document.getElementById('time').textContent = now.toLocaleTimeString();
@@ -188,7 +178,7 @@
         setInterval(updateTime, 1000);
         updateTime();
 
-        // Placeholder for ping (static for now)
+        
         document.getElementById('ping').textContent = 'N/A';
     </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
