@@ -1,37 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KagenouBotV4 Dashboard</title>
-  <link rel="stylesheet" href="/styles.css">
+    <title>KagenouBot Dashboard</title>
+    <meta name="description" content="Configure your Shadow Garden Bot with personalized settings and command selections.">
+    <meta property="og:image" content="https://i.imgur.com/jPAVdEs.jpeg">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@300;400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="/image/home.png">
 </head>
 <body>
-  <div class="container">
-    <h1>KagenouBotV4 Dashboard</h1>
-    <form id="configForm">
-      <div class="form-group">
-        <label for="appstate">Paste Appstate JSON:</label>
-        <textarea id="appstate" name="appstate" rows="10" placeholder="Paste your appstate.json content here" required></textarea>
-      </div>
-      <div class="form-group">
-        <label for="commands">Select Commands:</label>
-        <select id="commands" name="commands" multiple size="5">
-          <!-- Populated by JavaScript -->
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="adminUid">Admin UID:</label>
-        <input type="text" id="adminUid" name="adminUid" placeholder="Enter Admin UID" required>
-      </div>
-      <div class="form-group">
-        <label for="prefix">Prefix:</label>
-        <input type="text" id="prefix" name="prefix" placeholder="Enter Prefix (e.g., #)" required>
-      </div>
-      <button type="submit">Save Configuration</button>
-    </form>
-    <div id="status" class="status"></div>
-  </div>
-  <script src="/script.js"></script>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="#">
+            <img src="/image/home.png" alt="Home" style="width: 30px; height: auto;">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav" style="margin-right: 70px;">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/active">Active</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/tos-privacy-policy">Terms</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h1 class="col text-center" style="font-size: 20px; padding: 10px;">KagenouBot Dashboard </h1>
+        <p style="font-size: 10px; text-align: center;">Version: 4.0.0</p>
+        <form id="configForm">
+            <div class="row">
+                <div class="col-md-12">
+                    <textarea id="appstate" name="appstate" class="form-control centered-textarea center-placeholder" placeholder="Paste your appstate.json content here" rows="10" required></textarea>
+                </div>
+            </div>
+            <p style="margin-top: 15px; font-size: 12px; text-align: left;">Greetings! Paste your appstate JSON here to configure the bot.</p>
+        </form>
+    </div>
+
+    <div class="container" id="listOfCommands">
+        <h1 style="font-size: 12px; padding: 10px;">Please choose your commands by tapping on the respective options.</h1>
+        <select id="commands" name="commands" multiple size="5" class="form-control"></select>
+        <button class="btn btn-primary" onclick="selectAllCommands(); scrollToSection('adminOfCommands');">SELECT ALL COMMANDS</button>
+    </div>
+
+    <div class="container" id="adminOfCommands">
+        <h1 style="font-size: 12px; padding: 10px;">Please provide an Admin UID (optional). Use 'default' if none.</h1>
+        <input type="text" id="inputOfAdmin" name="adminUid" placeholder="Admin userID" class="form-control">
+    </div>
+
+    <div class="container" id="prefixOfCommands">
+        <h1 style="font-size: 12px; padding: 10px;">Please provide a prefix (optional). Use 'non-prefix' if none.</h1>
+        <input type="text" id="inputOfPrefix" name="prefix" placeholder="@, #, /, *, etc." class="form-control">
+    </div>
+
+    <div class="col text-center">
+        <button class="btn btn-primary" onclick="submitConfig()" disabled id="submitButton" style="width: 100%">Submit</button>
+    </div>
+
+    <div id="result" class="container text-center" style="display: none; font-size: 10px;"></div>
+
+    <br><br>
+
+    <div>
+        <br>
+        <button id="scrollUpBtn"><i class="fa-solid fa-angles-up"></i></button>
+        <div class="footer">
+            <p>© 2024 Kaizenji | All rights reserved.</p>
+            <p>Time: <span id="time"></span> | Ping: <span id="ping"></span></p>
+        </div>
+    </div>
+
+    <script>
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function selectAllCommands() {
+            const commandsSelect = document.getElementById('commands');
+            for (let option of commandsSelect.options) {
+                option.selected = true;
+            }
+            scrollToSection('adminOfCommands');
+        }
+
+        // Submit function
+        function submitConfig() {
+            const appstate = document.getElementById('appstate').value.trim();
+            const commands = Array.from(document.getElementById('commands').selectedOptions).map(option => option.value);
+            const adminUid = document.getElementById('inputOfAdmin').value.trim() || 'default';
+            const prefix = document.getElementById('inputOfPrefix').value.trim() || 'non-prefix';
+
+            if (!appstate) {
+                showResult('Please paste an appstate JSON.', 'error');
+                return;
+            }
+
+            try {
+                JSON.parse(appstate); // Validate JSON
+            } catch (e) {
+                showResult('Invalid JSON format in appstate.', 'error');
+                return;
+            }
+
+            fetch('/config', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ appstate, commands, adminUid, prefix })
+            })
+            .then(response => response.text())
+            .then(result => {
+                showResult(result, response.ok ? 'success' : 'error');
+            })
+            .catch(error => showResult(`Error: ${error.message}`, 'error'));
+        }
+
+        function showResult(message, type) {
+            const result = document.getElementById('result');
+            result.textContent = message;
+            result.className = `container text-center ${type === 'success' ? 'success-message' : 'error-message'}`;
+            result.style.display = 'block';
+            setTimeout(() => result.style.display = 'none', 5000);
+        }
+
+        // Enable submit button when appstate is filled
+        document.getElementById('appstate').addEventListener('input', function() {
+            document.getElementById('submitButton').disabled = !this.value.trim();
+        });
+
+        // Populate commands
+        fetch('/commands')
+            .then(response => response.json())
+            .then(commandNames => {
+                const commandsSelect = document.getElementById('commands');
+                commandNames.forEach(cmd => {
+                    const option = document.createElement('option');
+                    option.value = cmd;
+                    option.textContent = cmd;
+                    commandsSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching commands:', error);
+                const fallbackCommands = ['admin', 'python', 'quiz', 'help'];
+                const commandsSelect = document.getElementById('commands');
+                fallbackCommands.forEach(cmd => {
+                    const option = document.createElement('option');
+                    option.value = cmd;
+                    option.textContent = cmd;
+                    commandsSelect.appendChild(option);
+                });
+            });
+
+        // Scroll button functionality
+        window.addEventListener('scroll', () => {
+            const scrollUpBtn = document.getElementById('scrollUpBtn');
+            if (window.scrollY > 300) {
+                scrollUpBtn.classList.add('show');
+                scrollUpBtn.classList.remove('hide');
+            } else {
+                scrollUpBtn.classList.add('hide');
+                scrollUpBtn.classList.remove('show');
+            }
+        });
+
+        document.getElementById('scrollUpBtn').addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('time').textContent = now.toLocaleTimeString();
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Placeholder for ping (static for now)
+        document.getElementById('ping').textContent = 'N/A';
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
+    <script>
+        let tracks = [
+            "https://raw.githubusercontent.com/Kaizenji/Kaizenji/main/aura.mp3",
+            "https://raw.githubusercontent.com/Kaizenji/Kaizenji/main/next.mp3",
+            "https://raw.githubusercontent.com/Kaizenji/Kaizenji/main/avangard.mp3",
+            "https://raw.githubusercontent.com/Kaizenji/Kaizenji/main/life-force.mp3",
+            "https://raw.githubusercontent.com/Kaizenji/Kaizenji/main/cute-depressed.mp3"
+        ];
+        
+        let randomTrack = tracks[Math.floor(Math.random() * tracks.length)];
+        
+        let sound = new Howl({
+          src: [randomTrack],
+          autoplay: true,
+          loop: false,
+          format: ["mp3"],
+          volume: 0.5,
+          onend: () => {},
+        });
+        
+        sound.play();
+    </script>
 </body>
 </html>
