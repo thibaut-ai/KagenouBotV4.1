@@ -461,15 +461,21 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'dashboard')));
+app.use(express.static(path.join(__dirname, 'dashboard', 'public')));
+
 app.post('/config', (req, res) => {
   const { appstate, commands, adminUid, prefix } = req.body;
+
   if (!appstate || !adminUid || !prefix) {
     return res.status(400).send('Missing required fields');
   }
+
   try {
+    // Validate and save appstate
     const appstateData = JSON.parse(appstate);
     fs.writeFileSync(path.join(__dirname, 'appstate.dev.json'), JSON.stringify(appstateData, null, 2));
+
+    // Update config
     let configData = {};
     const configFilePath = path.join(__dirname, 'config.json');
     if (fs.existsSync(configFilePath)) {
@@ -478,6 +484,8 @@ app.post('/config', (req, res) => {
     configData.admins = [adminUid];
     configData.Prefix = [prefix];
     fs.writeFileSync(configFilePath, JSON.stringify(configData, null, 2));
+
+    // Reload config and appstate in memory
     appState = appstateData;
     config = {
       admins: configData.admins || [],
@@ -489,7 +497,7 @@ app.post('/config', (req, res) => {
       ...configData,
     };
 
-    
+    // Reload commands
     reloadCommands();
 
     res.send('Configuration updated successfully');
@@ -497,8 +505,10 @@ app.post('/config', (req, res) => {
     res.status(500).send(`Error: ${error.message}`);
   }
 });
+
+// New endpoint to list commands
 app.get('/commands', (req, res) => {
-  const commandNames = Array.from(commands.keys()); 
+  const commandNames = Array.from(commands.keys()); // Get all command names from the commands Map
   res.json(commandNames);
 });
 
