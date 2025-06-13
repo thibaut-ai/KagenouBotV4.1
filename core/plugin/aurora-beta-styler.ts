@@ -1,32 +1,5 @@
-// core/plugins/aurora-beta-styler.ts
 
-type FontMap = Record<string, string>;
-
-type Fonts = Record<FontTypes, FontMap>;
-
-export type FontTypes =
-
-  | "bold"
-
-  | "fancy"
-
-  | "doubleStruck"
-
-  | "script"
-
-  | "fraktur"
-
-  | "sansSerif"
-
-  | "monospace"
-
-  | "italic"
-
-  | "gothic"
-
-  | "smallCaps";
-
-const auroraBetaFonts: Fonts = {
+const auroraBetaFonts = {
 
   bold: {
 
@@ -208,70 +181,68 @@ const auroraBetaFonts: Fonts = {
 
   },
 
-} as const;
+};
 
 const AuroraBetaStyler = {
 
-  format: ({
+  styleOutput: ({
 
-    title,
+    headerText,
 
-    emoji = '',
+    headerSymbol = "🏰",
 
-    titlefont = 'bold' as FontTypes,
+    headerStyle = "bold",
 
-    content,
+    bodyText,
 
-    contentfont = 'fancy' as FontTypes,
+    bodyStyle = "bold",
 
-    footer = '',
+    footerText = "",
 
-  }): string => {
+  }) => {
 
-    const validFonts = Object.keys(auroraBetaFonts) as FontTypes[];
+    const validFonts = Object.keys(auroraBetaFonts);
 
-    console.log("Using titlefont:", titlefont, "Available fonts:", validFonts);
+    let styledHeader = "";
 
-    let styledTitle = '';
+    if (headerText) {
 
-    if (title) {
+      const font = auroraBetaFonts[headerStyle];
 
-      const font = auroraBetaFonts[titlefont];
-
-      styledTitle = `❯ ❲ ${emoji} ❳ ${title.split('').map(char => font[char] || char).join('')}`;
+      styledHeader = `════『 ${headerSymbol} ${headerText.split('').map(char => font[char] || char).join('')} 』════`;
 
     }
 
-    let styledContent = '';
+    let styledBody = "";
 
-    if (content) {
+    if (bodyText) {
 
-      const font = auroraBetaFonts[contentfont];
+      const font = auroraBetaFonts[bodyStyle];
 
-      styledContent = content.split('').map(char => font[char] || char).join('');
-
-    }
-
-    let styledFooter = footer;
-
-    if (footer) {
-
-      styledFooter = footer.replace(/\*\*(.*?)\*\*/g, (_, text) => text.split('').map(char => auroraBetaFonts.bold[char] || char).join(''))
-
-                          .replace(/\*\*\*(.*?)\*\*\*/g, (_, text) => {
-
-                            const italicText = text.split('').map(char => auroraBetaFonts.italic[char] || char).join('');
-
-                            return italicText.split('').map(char => auroraBetaFonts.bold[char] || char).join('');
-
-                          });
+      styledBody = bodyText.split('').map(char => font[char] || char).join('');
 
     }
 
-    return `${styledTitle}\n━━━━━━━━━━━━━━━\n${styledContent || ''}\n━━━━━━━ ✕ ━━━━━━\n${styledFooter || ''}`;
+    let styledFooter = footerText;
+
+    if (footerText) {
+
+      styledFooter = footerText.replace(/\*\*(.*?)\*\*/g, (_, text) => text.split('').map(char => auroraBetaFonts.bold[char] || char).join(''))
+
+                              .replace(/\*\*\*(.*?)\*\*\*/g, (_, text) => {
+
+                                const italicText = text.split('').map(char => auroraBetaFonts.italic[char] || char).join('');
+
+                                return italicText.split('').map(char => auroraBetaFonts.bold[char] || char).join('');
+
+                              });
+
+    }
+
+    return `${styledHeader}\n${styledBody}\n═════════════════════\n${styledFooter}`;
 
   },
 
 };
 
-export default AuroraBetaStyler;
+module.exports = AuroraBetaStyler;
