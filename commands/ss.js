@@ -19,7 +19,7 @@ module.exports = {
 
     await api.sendMessage({
       threadID: event.threadID,
-      message: `Here’s the screenshot for ${url}`,
+      message: `Here’s the screenshot for`,
       attachment: attachment,
     })
   }
