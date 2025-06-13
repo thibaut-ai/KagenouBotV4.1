@@ -245,9 +245,9 @@ const handleMessage = async (api, event) => {
     setCooldown(senderID, commandName, cooldown || 3);
     try {
       if (command.execute) {
-        await command.execute(api, event, args, commands, prefix, config.admins, appState, sendMessage, apiHandler, usersData, globalData);
+        await command.execute(api, event, args, commands, prefix, config.admins, appState, sendMessage, usersData, globalData);
       } else if (command.run) {
-        await command.run({ api, event, args, apiHandler, usersData, globalData, admins: config.admins, prefix: prefix, db });
+        await command.run({ api, event, args, usersData, globalData, admins: config.admins, prefix: prefix, db });
       } else if (command.config && command.config.onStart) {
         await command.config.onStart({
           api,
