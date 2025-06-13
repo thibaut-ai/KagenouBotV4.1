@@ -458,6 +458,10 @@ startBot();
 /* Developed by Aljur pogoy */
 const express = require('express');
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'dashboard', 'public')));
+
 app.get('/portfolio', (req, res) => {
   if (!global.client) {
     return res.status(500).json({ error: 'Bot is not running' });
@@ -470,4 +474,9 @@ app.get('/portfolio', (req, res) => {
     status: 'Active',
     prefix: config.Prefix[0] || '#'
   });
+});
+
+const dashboardPort = 3000;
+app.listen(dashboardPort, () => {
+  console.log(`[DASHBOARD] Dashboard running on http://localhost:${dashboardPort}`);
 });
