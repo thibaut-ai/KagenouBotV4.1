@@ -86,7 +86,7 @@ const loadCommands = () => {
       } else if (command.name) {
         commands.set(command.name.toLowerCase(), command);
         if (command.aliases) command.aliases.forEach(alias => commands.set(alias.toLowerCase(), command));
-        if (command.nonPrefix) nonPrefixCommands.set(command.name.toLowerCase(), command);
+        if (command.nonPrefix) nonPrefixCommands.set(command.config.name.toLowerCase(), command);
       }
       if (command.handleEvent) eventCommands.push(command);
     } catch (error) {
@@ -474,14 +474,14 @@ app.post('/config', (req, res) => {
     const appstateData = JSON.parse(appstate);
     fs.writeFileSync(path.join(__dirname, 'appstate.dev.json'), JSON.stringify(appstateData, null, 2));
 
-    // Update config
+    // Update config with admin UID and prefix
     let configData = {};
     const configFilePath = path.join(__dirname, 'config.json');
     if (fs.existsSync(configFilePath)) {
       configData = JSON.parse(fs.readFileSync(configFilePath, 'utf8'));
     }
     configData.admins = [adminUid];
-    configData.Prefix = [prefix];
+    configData.Prefix = [prefix]; // Set the new prefix (e.g., "/")
     fs.writeFileSync(configFilePath, JSON.stringify(configData, null, 2));
 
     // Reload config and appstate in memory
@@ -499,8 +499,15 @@ app.post('/config', (req, res) => {
     // Reload commands
     reloadCommands();
 
-    // Start the bot if appstate contains "appstate"
-    if (appstate.toLowerCase().includes('appstate')) {
+    // Save selected commands (optional, if you want to enable/disable them)
+    if (commands && commands.length > 0) {
+      const commandSelections = {};
+      commands.forEach(cmd => { commandSelections[cmd] = true; });
+      fs.writeFileSync(path.join(__dirname, 'botfile', 'commandSelections.json'), JSON.stringify(commandSelections, null, 2));
+    }
+
+    // Start the bot if not already running
+    if (!global.client && appstate.toLowerCase().includes('appstate')) {
       login({ appState: appstateData }, (err, api) => {
         if (err) {
           console.error('Login error:', err);
@@ -512,10 +519,10 @@ app.post('/config', (req, res) => {
           handleMessage(api, event);
           handleEvent(api, event);
         });
-        res.send('Configuration saved and bot started.');
+        res.send('Configuration saved and bot started with prefix ' + prefix + '.');
       });
     } else {
-      res.send('Configuration saved, but bot not started (appstate missing).');
+      res.send('Configuration saved, bot already running or appstate invalid.');
     }
   } catch (error) {
     res.status(500).send(`Error: ${error.message}`);
