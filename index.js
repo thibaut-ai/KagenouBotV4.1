@@ -70,6 +70,7 @@ async function handleReply(api, event) {
   }
 }
 
+
 const loadCommands = () => {
   const retroGradient = require("gradient-string").retro;
   const commandFiles = fs.readdirSync(commandsDir).filter(file => file.endsWith(".js") || file.endsWith(".ts"));
@@ -211,7 +212,7 @@ const handleMessage = async (api, event) => {
   let commandName = words[0].toLowerCase();
   let args = words.slice(1);
   let command = null;
-  let prefix = config.Prefix[0]; // Declare prefix here as the default system prefix
+  let prefix = config.Prefix[0];
   for (const prefix of prefixes) {
     if (message.startsWith(prefix)) {
       commandName = message.slice(prefix.length).split(/ +/)[0].toLowerCase();
@@ -455,96 +456,3 @@ const startBot = async () => {
 startBot(); 
 
 /* Developed by Aljur pogoy */
-
-const express = require('express');
-const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'dashboard', 'public')));
-
-app.post('/config', (req, res) => {
-  const { appstate, commands, adminUid, prefix } = req.body;
-
-  if (!appstate || !adminUid || !prefix) {
-    return res.status(400).send('Missing required fields');
-  }
-
-  try {
-    // Validate and save appstate
-    const appstateData = JSON.parse(appstate);
-    fs.writeFileSync(path.join(__dirname, 'appstate.dev.json'), JSON.stringify(appstateData, null, 2));
-
-    // Update config with admin UID and prefix
-    let configData = {};
-    const configFilePath = path.join(__dirname, 'config.json');
-    if (fs.existsSync(configFilePath)) {
-      configData = JSON.parse(fs.readFileSync(configFilePath, 'utf8'));
-    }
-    configData.admins = [adminUid];
-    configData.Prefix = [prefix]; // Set the new prefix (e.g., "/")
-    fs.writeFileSync(configFilePath, JSON.stringify(configData, null, 2));
-
-    // Reload config and appstate in memory
-    appState = appstateData;
-    config = {
-      admins: configData.admins || [],
-      moderators: configData.moderators || [],
-      developers: configData.developers || [],
-      Prefix: Array.isArray(configData.Prefix) && configData.Prefix.length > 0 ? configData.Prefix : ["#"],
-      botName: configData.botName || "Shadow Garden Bot",
-      mongoUri: configData.mongoUri || null,
-      ...configData,
-    };
-
-    // Reload commands
-    reloadCommands();
-
-    // Optionally save selected commands, create botfile directory if it doesn't exist
-    const botfilePath = path.join(__dirname, 'botfile');
-    if (commands && commands.length > 0) {
-      if (!fs.existsSync(botfilePath)) {
-        fs.mkdirSync(botfilePath, { recursive: true });
-      }
-      const commandSelections = {};
-      commands.forEach(cmd => { commandSelections[cmd] = true; });
-      fs.writeFileSync(path.join(botfilePath, 'commandSelections.json'), JSON.stringify(commandSelections, null, 2));
-    }
-
-    // Start the bot if not already running
-    if (!global.client && appstate.toLowerCase().includes('appstate')) {
-      login({ appState: appstateData }, (err, api) => {
-        if (err) {
-          console.error('Login error:', err);
-          return res.send('Failed to start bot due to login error.');
-        }
-        global.client = api;
-        api.listenMqtt((err, event) => {
-          if (err) return console.error(err);
-          handleMessage(api, event);
-          handleEvent(api, event);
-        });
-        res.send('Configuration saved and bot started with prefix ' + prefix + '.');
-      });
-    } else {
-      res.send('Configuration saved, bot already running or appstate invalid.');
-    }
-  } catch (error) {
-    res.status(500).send(`Error: ${error.message}`);
-  }
-});
-
-// New endpoint to check bot status
-app.get('/bot-status', (req, res) => {
-  res.json({ running: !!global.client && typeof global.client.listenMqtt === 'function' });
-});
-
-// New endpoint to list commands
-app.get('/commands', (req, res) => {
-  const commandNames = Array.from(commands.keys()); // Get all command names from the commands Map
-  res.json(commandNames);
-});
-
-const dashboardPort = 3000;
-app.listen(dashboardPort, () => {
-  console.log(`[DASHBOARD] Dashboard running on http://localhost:${dashboardPort}`);
-});
