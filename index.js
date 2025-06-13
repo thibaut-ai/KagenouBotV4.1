@@ -432,6 +432,13 @@ const startListeningWithAutoRestart = (api) => {
     startListener();
   }, 3600000);
 };
+
+const express = require('express');
+const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'dashboard', 'public')));
+
 const startBot = async () => {
   login({ appState }, (err, api) => {
     if (err) {
@@ -450,33 +457,175 @@ const startBot = async () => {
       autoMarkDelivery: false,
       autoMarkRead: false,
     });
+
+    // Set global API instance
+    global.api = api;
+
+    // Start listening
     startListeningWithAutoRestart(api);
+
+    // Serve portfolio with bot info
+    app.get('/', (req, res) => {
+      const botUID = api.getCurrentUserID();
+      const botName = config.botName || 'Shadow Garden Bot';
+      res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <title>ᯓ★ Bot Portfolio</title>
+            <meta name="description" content="Portfolio of the Shadow Garden Bot.">
+            <meta property="og:image" content="https://i.imgur.com/jPAVdEs.jpeg">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link rel="icon" href="/image/home.png">
+            <style>
+                body {
+                    font-family: 'Courier Prime', monospace;
+                    background: url('https://i.imgur.com/jPAVdEs.jpeg') no-repeat center center fixed;
+                    background-size: cover;
+                    color: #fff;
+                    margin: 0;
+                    padding: 0;
+                }
+                .navbar {
+                    background-color: #343a40;
+                }
+                .navbar-brand img {
+                    margin-right: 10px;
+                }
+                .navbar-nav .nav-link {
+                    color: #fff !important;
+                }
+                .container {
+                    padding: 20px;
+                    background: rgba(0, 0, 0, 0.7);
+                    border-radius: 10px;
+                    margin-top: 20px;
+                }
+                .card {
+                    background: rgba(255, 255, 255, 0.1);
+                    border: none;
+                    color: #fff;
+                }
+                .card-title {
+                    font-size: 24px;
+                    font-weight: bold;
+                }
+                .card-text {
+                    font-size: 16px;
+                }
+                .footer {
+                    text-align: center;
+                    padding: 10px;
+                    background: #343a40;
+                    position: fixed;
+                    bottom: 0;
+                    width: 100%;
+                }
+                #scrollUpBtn {
+                    position: fixed;
+                    bottom: 60px;
+                    right: 20px;
+                    background-color: #007bff;
+                    border: none;
+                    border-radius: 50%;
+                    width: 40px;
+                    height: 40px;
+                    color: #fff;
+                    font-size: 20px;
+                    cursor: pointer;
+                    display: none;
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                }
+                #scrollUpBtn.show {
+                    display: block;
+                    opacity: 1;
+                }
+                #scrollUpBtn.hide {
+                    opacity: 0;
+                }
+                .text-danger {
+                    color: #dc3545;
+                }
+            </style>
+        </head>
+        <body>
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <a class="navbar-brand" href="/">
+                    <img src="/image/home.png" alt="Home" style="width: 30px; height: auto;">
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav" style="margin-right: 70px;">
+                    <ul class="navbar-nav">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="/">Portfolio <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/tos-privacy-policy">Terms</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <div class="container">
+                <h1 class="col text-center" style="font-size: 20px; padding: 10px;">Bot Portfolio</h1>
+                <p style="font-size: 10px; text-align: center;">Version: 1.0.1</p>
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">${botName}</h5>
+                        <p class="card-text">UID: ${botUID}</p>
+                        <p class="card-text">Status: Active</p>
+                        <p class="card-text">Prefix: ${config.Prefix[0] || '#'}</p>
+                        <img src="https://via.placeholder.com/150" alt="Bot Profile" class="img-fluid mt-3" style="max-width: 150px;">
+                    </div>
+                </div>
+            </div>
+            <br><br>
+            <div>
+                <br>
+                <button id="scrollUpBtn"><i class="fa-solid fa-angles-up"></i></button>
+                <div class="footer">
+                    <p>© 2024 Kaizenji | All rights reserved.</p>
+                    <p>Time: <span id="time"></span> | Ping: <span id="ping"></span></p>
+                </div>
+            </div>
+            <script>
+                window.addEventListener('scroll', () => {
+                    const scrollUpBtn = document.getElementById('scrollUpBtn');
+                    if (window.scrollY > 300) {
+                        scrollUpBtn.classList.add('show');
+                        scrollUpBtn.classList.remove('hide');
+                    } else {
+                        scrollUpBtn.classList.add('hide');
+                        scrollUpBtn.classList.remove('show');
+                    }
+                });
+                document.getElementById('scrollUpBtn').addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+                function updateTime() {
+                    const now = new Date();
+                    document.getElementById('time').textContent = now.toLocaleTimeString();
+                }
+                setInterval(updateTime, 1000);
+                updateTime();
+                document.getElementById('ping').textContent = 'N/A';
+            </script>
+            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        </body>
+        </html>
+      `);
+    });
+
+    const dashboardPort = 3000;
+    app.listen(dashboardPort, () => {
+      console.log(`[DASHBOARD] Dashboard running on http://localhost:${dashboardPort}`);
+    });
   });
 };
-startBot(); 
-
-/* Developed by Aljur pogoy */
-const express = require('express');
-const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'dashboard', 'public')));
-
-app.get('/portfolio', (req, res) => {
-  if (!global.client) {
-    return res.status(500).json({ error: 'Bot is not running' });
-  }
-  const botUID = api.getCurrentUserID();
-  const botName = config.botName || 'Shadow Garden Bot';
-  res.json({
-    uid: botUID,
-    name: botName,
-    status: 'Active',
-    prefix: config.Prefix[0] || '#'
-  });
-});
-
-const dashboardPort = 3000;
-app.listen(dashboardPort, () => {
-  console.log(`[DASHBOARD] Dashboard running on http://localhost:${dashboardPort}`);
-});
+startBot();
