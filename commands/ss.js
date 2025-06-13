@@ -1,6 +1,7 @@
 module.exports = {
   config: {
     name: "ss",
+    author: "Aljur pogoy",
     aliases: ["screenshot"],
     role: 0,
     cooldown: 10,
