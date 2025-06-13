@@ -47,7 +47,7 @@ module.exports = {
     }
 
     const url = encodeURIComponent(args[0]);
-    const apiUrl = `https://kaiz-apis.gleeze.com/api/screenshot?url=${encodeURIComponent(url)}&apikey=6345c38b-47b1-4a9a-8a70-6e6f17d6641b`
+    const apiUrl = `https://kaiz-apis.gleeze.com/api/screenshot?url=${encodeURIComponent(url)}&apikey=6345c38b-47b1-4a9a-8a70-6e6f17d6641b`;
     try {
 
       
