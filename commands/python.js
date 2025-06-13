@@ -2,7 +2,7 @@ const { exec } = require("child_process");
 
 const { promisify } = require("util");
 
-import AuroraBetaStyler from "../core/plugins/aurora-beta-styler";
+import AuroraBetaStyler from "../core/plugin/aurora-beta-styler";
 
 module.exports = {
 
