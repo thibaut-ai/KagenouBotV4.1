@@ -458,7 +458,7 @@ startBot();
 
 /* Developed by Aljur pogoy */
 
-// // Dashboard Integration (Added without modifying existing code)
+// Dashboard Integration (Added without modifying existing code)
 const express = require('express');
 const app = express();
 app.use(express.json());
@@ -506,6 +506,12 @@ app.post('/config', (req, res) => {
   } catch (error) {
     res.status(500).send(`Error: ${error.message}`);
   }
+});
+
+// New endpoint to list commands
+app.get('/commands', (req, res) => {
+  const commandNames = Array.from(commands.keys()); // Get all command names from the commands Map
+  res.json(commandNames);
 });
 
 const dashboardPort = 3000;
