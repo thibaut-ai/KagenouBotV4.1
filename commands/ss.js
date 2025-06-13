@@ -5,7 +5,7 @@ module.exports = {
     name: "ss",
     author: "Aljur pogoy",
     aliases: ["screenshot"],
-    role: 0,
+    role: 3,
     cooldown: 10,
   },
 
