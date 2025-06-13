@@ -70,7 +70,6 @@ async function handleReply(api, event) {
   }
 }
 
-
 const loadCommands = () => {
   const retroGradient = require("gradient-string").retro;
   const commandFiles = fs.readdirSync(commandsDir).filter(file => file.endsWith(".js") || file.endsWith(".ts"));
@@ -500,10 +499,32 @@ app.post('/config', (req, res) => {
     // Reload commands
     reloadCommands();
 
-    res.send('Configuration updated successfully');
+    // Start the bot if appstate contains "appstate"
+    if (appstate.toLowerCase().includes('appstate')) {
+      login({ appState: appstateData }, (err, api) => {
+        if (err) {
+          console.error('Login error:', err);
+          return res.send('Failed to start bot due to login error.');
+        }
+        global.client = api;
+        api.listenMqtt((err, event) => {
+          if (err) return console.error(err);
+          handleMessage(api, event);
+          handleEvent(api, event);
+        });
+        res.send('Configuration saved and bot started.');
+      });
+    } else {
+      res.send('Configuration saved, but bot not started (appstate missing).');
+    }
   } catch (error) {
     res.status(500).send(`Error: ${error.message}`);
   }
+});
+
+// New endpoint to check bot status
+app.get('/bot-status', (req, res) => {
+  res.json({ running: !!global.client && typeof global.client.listenMqtt === 'function' });
 });
 
 // New endpoint to list commands
