@@ -456,3 +456,18 @@ const startBot = async () => {
 startBot(); 
 
 /* Developed by Aljur pogoy */
+const express = require('express');
+const app = express();
+app.get('/portfolio', (req, res) => {
+  if (!global.client) {
+    return res.status(500).json({ error: 'Bot is not running' });
+  }
+  const botUID = global.client.getCurrentUserID();
+  const botName = config.botName || 'Shadow Garden Bot';
+  res.json({
+    uid: botUID,
+    name: botName,
+    status: 'Active',
+    prefix: config.Prefix[0] || '#'
+  });
+});
