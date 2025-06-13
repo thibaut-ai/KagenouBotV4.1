@@ -47,8 +47,8 @@ module.exports = {
     }
 
     const url = encodeURIComponent(args[0]);
-
-    const apiUrl = `https://kaiz-apis.gleeze.com/api/screenshot?url=${url}`;
+    const apiKey = "21b2b7f078ab98cb5af9a0bd4eaa24c4e1c3ec20b1c864006a6f03cf0eee6006"
+    const apiUrl = `https://haji-mix.up.railway.app/api/screenshot?url=${encodeURIComponent(url)}&api_key=${apiKey}`
 
     try {
 
