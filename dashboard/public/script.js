@@ -30,46 +30,51 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
 
     const formData = new FormData(form);
-    const appstateFile = formData.get('appstate');
+    const appstate = formData.get('appstate').trim();
     const commands = Array.from(formData.getAll('commands'));
     const adminUid = formData.get('adminUid').trim();
     const prefix = formData.get('prefix').trim();
 
-    if (!appstateFile) {
-      status.textContent = 'Please upload an appstate file.';
+    if (!appstate) {
+      status.textContent = 'Please paste an appstate JSON.';
       status.className = 'status error';
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const appstate = e.target.result;
-      try {
-        const response = await fetch('/config', {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-          },
-          body: JSON.stringify({
-            appstate,
-            commands,
-            adminUid,
-            prefix
-          })
-        });
+    try {
+      // Validate JSON syntax
+      JSON.parse(appstate);
+    } catch (error) {
+      status.textContent = 'Invalid JSON format in appstate.';
+      status.className = 'status error';
+      return;
+    }
 
-        const result = await response.text();
-        if (response.ok) {
-          status.textContent = result;
-          status.className = 'status success';
-        } else {
-          throw new Error(result);
-        }
-      } catch (error) {
-        status.textContent = `Error: ${error.message}`;
-        status.className = 'status error';
+    try {
+      const response = await fetch('/config', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          appstate,
+          commands,
+          adminUid,
+          prefix
+        })
+      });
+
+      const result = await response.text();
+      if (response.ok) {
+        status.textContent = result;
+        status.className = 'status success';
+      } else {
+        throw new Error(result);
       }
-    };
-    reader.readAsText(appstateFile);
+    } catch (error) {
+      status.textContent = `Error: ${error.message}`;
+      status.className = 'status error';
+    }
   });
 });
