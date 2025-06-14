@@ -438,11 +438,13 @@ const startListeningWithAutoRestart = (api) => {
   }, 3600000);
 };
 
-const express = require('express');
+/* const express = require('express');
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'dashboard', 'public')));
+*/
+
 
 const startBot = async () => {
   login({ appState }, (err, api) => {
@@ -499,9 +501,8 @@ const startBot = async () => {
             </head>
             <body>
                 <div class="header"><h1>KagenouBotV3 Portfolio</h1></div>
-                <div class="nav"><a href="/">Home</a><a href="/terms">Terms</a></div>
                 <div class="content"><div class="bot-card"><h2>${botName}</h2><p>UID: ${botUID}</p><p>Status: Active</p><p>Prefix: ${config.Prefix[0] || '#'}</p><img src="${avatarUrl}" alt="Bot Profile"></div></div>
-                <div class="footer"><p>© 2025 Kaizenji | All rights reserved.</p><p>Time: <span id="time"></span> | Ping: N/A</p></div>
+                <div class="footer"><p>© 2025 Aljur Pogoy| All rights reserved.</p><p>Time: <span id="time"></span> | Ping: 100</p></div>
                 <script>function updateTime(){document.getElementById('time').textContent=new Date().toLocaleTimeString()}setInterval(updateTime,1000);updateTime();</script>
             </body>
             </html>
