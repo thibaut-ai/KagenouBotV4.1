@@ -2,12 +2,14 @@
  * @author Aljur pogoy
  * Thank you for using our Botfile ✨
  */
+
 require("ts-node").register();
 require("./core/global");
 const { MongoClient } = require("mongodb");
 const fs = require("fs-extra");
 const path = require("path");
 const login = require("fbvibex");
+const apiHandler = require("./utils/apiHandler");
 const { handleAuroraCommand, loadAuroraCommands } = require("./core/aurora"); 
 loadAuroraCommands
 const commands = new Map();
@@ -47,6 +49,14 @@ const loadBannedUsers = () => {
   }
 };
 
+function getUserRole(uid) {
+  uid = String(uid);
+  if (config.developers.includes(uid)) return 3;
+  if (config.moderators.includes(uid)) return 2;
+  if (config.admins.includes(uid)) return 1;
+  return 0;
+}
+
 async function handleReply(api, event) {
   const replyData = global.Kagenou.replies[event.messageReply?.messageID];
   if (!replyData) return;
@@ -61,6 +71,7 @@ async function handleReply(api, event) {
     api.sendMessage(`An error occurred while processing your reply: ${err.message}`, event.threadID, event.messageID);
   }
 }
+
 
 const loadCommands = () => {
   const retroGradient = require("gradient-string").retro;
@@ -92,19 +103,13 @@ const loadCommands = () => {
 };
 
 loadCommands();
-loadAuroraCommands();
 let appState = {};
 
 try {
-  const appStateData = fs.readFileSync("./appstate.dev.json", "utf8");
-  appState = JSON.parse(appStateData);
-  console.log("[CONFIG] Loaded appstate.dev.json:", appState);
+  appState = JSON.parse(fs.readFileSync("./appstate.dev.json", "utf8"));
 } catch (error) {
-  console.error("Error loading appstate.dev.json or file not found:", error);
-  console.warn("Using empty appState as fallback.");
-  appState = {};
+  console.error("Error loading appstate.json:", error);
 }
-
 try {
   const configData = JSON.parse(fs.readFileSync(configFile, "utf8"));
   console.log("[CONFIG] Loaded config.json:", configData);
@@ -209,7 +214,7 @@ const handleMessage = async (api, event) => {
   let commandName = words[0].toLowerCase();
   let args = words.slice(1);
   let command = null;
-  let prefix = config.Prefix[0];
+  let prefix = config.Prefix[0]; // Declare prefix here as the default system prefix
   for (const prefix of prefixes) {
     if (message.startsWith(prefix)) {
       commandName = message.slice(prefix.length).split(/ +/)[0].toLowerCase();
@@ -223,6 +228,15 @@ const handleMessage = async (api, event) => {
     command = nonPrefixCommands.get(commandName);
   }
   if (command) {
+    const userRole = getUserRole(senderID);
+    const commandRole = command.role || 0;
+    if (userRole < commandRole) {
+      return api.sendMessage(
+        ` You do not have permission to use this command. Required role: ${commandRole} (0=Everyone, 1=Admin, 2=Moderator, 3=Developer), your role: ${userRole}.`,
+        threadID,
+        messageID
+      );
+    }
     const disabledCommandsList = global.disabledCommands.get("disabled") || [];
     if (disabledCommandsList.includes(commandName)) {
       return api.sendMessage(`${commandName.charAt(0).toUpperCase() + commandName.slice(1)} Command has been disabled.`, threadID, messageID);
@@ -233,9 +247,9 @@ const handleMessage = async (api, event) => {
     setCooldown(senderID, commandName, cooldown || 3);
     try {
       if (command.execute) {
-        await command.execute(api, event, args, commands, prefix, config.admins, appState, sendMessage, usersData, globalData);
+        await command.execute(api, event, args, commands, prefix, config.admins, appState, sendMessage, apiHandler, usersData, globalData);
       } else if (command.run) {
-        await command.run({ api, event, args, usersData, globalData, admins: config.admins, prefix: prefix, db, commands });
+        await command.run({ api, event, args, apiHandler, usersData, globalData, admins: config.admins, prefix: prefix, db });
       } else if (command.config && command.config.onStart) {
         await command.config.onStart({
           api,
@@ -287,7 +301,7 @@ async function handleReaction(api, event) {
           delete global.Kagenou.replies[event.messageID];
         } catch (error) {
           console.error(`[REACTION ERROR] Failed to process reaction for '${command.config.name}':`, error);
-          api.sendMessage(`Error processing reaction: ${error.message}`, threadID, event.messageID);
+          api.sendMessage(`Error processing reaction: ${error.message}`, event.threadID, event.messageID);
         }
       }
     }
@@ -362,7 +376,7 @@ const startListeningForMessages = (api) => {
         }
       }
     }
-    if (event.type === "message_reaction") {
+   if (event.type === "message_reaction") {
       await handleReaction(api, event);
     }
     if (event.type === "message" && event.body && event.body.startsWith(config.Prefix[0])) {
