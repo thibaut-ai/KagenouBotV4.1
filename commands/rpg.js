@@ -2837,6 +2837,516 @@ case "harvest":
           messageID
         );
 
+case "prospect":
+        const prospectExp = Math.floor(Math.random() * 25) + 10;
+        const prospectLootChance = Math.random();
+        let prospectContent = `Prospected for resources! Gained ${prospectExp} XP.`;
+        if (prospectLootChance > 0.45) {
+          player.inventory["Raw Gem"] = (player.inventory["Raw Gem"] || 0) + 1;
+          prospectContent += `\nFound Raw Gem x1!`;
+          await rpgManager.updatePlayer(senderID, { exp: (player.exp || 0) + prospectExp, inventory: player.inventory });
+        }
+        return api.sendMessage(
+          format({
+            title: "Prospect",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "🔍",
+            content: prospectContent
+          }),
+          threadID,
+          messageID
+        );
+
+      case "weave":
+        if (player.inventory["Forest Leaf"] < 2) {
+          return api.sendMessage(
+            format({
+              title: "Weave",
+              titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+              titleFont: "double_struck",
+              emojis: "🚫",
+              content: `Need 2 Forest Leaves!`
+            }),
+            threadID,
+            messageID
+          );
+        }
+        player.inventory["Forest Leaf"] -= 2;
+        player.inventory["Woven Cloak"] = (player.inventory["Woven Cloak"] || 0) + 1;
+        await rpgManager.updatePlayer(senderID, { inventory: player.inventory });
+        return api.sendMessage(
+          format({
+            title: "Weave",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "🧶",
+            content: `Wove a Cloak!`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "scoutmountain":
+        const mountainExp = Math.floor(Math.random() * 35) + 15;
+        const mountainLootChance = Math.random();
+        let mountainContent = `Scouted mountain! Gained ${mountainExp} XP.`;
+        if (mountainLootChance > 0.4) {
+          player.inventory["Mountain Rock"] = (player.inventory["Mountain Rock"] || 0) + 1;
+          mountainContent += `\nFound Mountain Rock x1!`;
+          await rpgManager.updatePlayer(senderID, { exp: (player.exp || 0) + mountainExp, inventory: player.inventory });
+        }
+        return api.sendMessage(
+          format({
+            title: "ScoutMountain",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "🏔️",
+            content: mountainContent
+          }),
+          threadID,
+          messageID
+        );
+
+      case "perform":
+        const performExp = Math.floor(Math.random() * 20) + 10;
+        await rpgManager.updatePlayer(senderID, { exp: (player.exp || 0) + performExp });
+        return api.sendMessage(
+          format({
+            title: "Perform",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "🎭",
+            content: `Performed for the crowd! Gained ${performExp} XP.`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "plow":
+        const plowExp = 15;
+        player.inventory["Planted Seed"] = (player.inventory["Planted Seed"] || 0) + 1;
+        await rpgManager.updatePlayer(senderID, { exp: (player.exp || 0) + plowExp, inventory: player.inventory });
+        return api.sendMessage(
+          format({
+            title: "Plow",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "🌱",
+            content: `Plowed the field! Gained ${plowExp} XP.`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "refine":
+        if (player.inventory["Raw Gem"] < 1) {
+          return api.sendMessage(
+            format({
+              title: "Refine",
+              titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+              titleFont: "double_struck",
+              emojis: "🚫",
+              content: `Need 1 Raw Gem!`
+            }),
+            threadID,
+            messageID
+          );
+        }
+        player.inventory["Raw Gem"] -= 1;
+        player.inventory["Polished Gem"] = (player.inventory["Polished Gem"] || 0) + 1;
+        await rpgManager.updatePlayer(senderID, { inventory: player.inventory });
+        return api.sendMessage(
+          format({
+            title: "Refine",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "💎",
+            content: `Refined a Polished Gem!`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "sabotage":
+        const sabotageTarget = args[1];
+        if (!sabotageTarget) {
+          return api.sendMessage(
+            format({
+              title: "Sabotage",
+              titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+              titleFont: "double_struck",
+              emojis: "🚫",
+              content: `Sabotage: #rpg sabotage <userID>`
+            }),
+            threadID,
+            messageID
+          );
+        }
+        const sabotageChance = Math.random();
+        if (sabotageChance > 0.6) {
+          const sabotageExp = 30;
+          await rpgManager.updatePlayer(senderID, { exp: (player.exp || 0) + sabotageExp });
+          return api.sendMessage(
+            format({
+              title: "Sabotage",
+              titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+              titleFont: "double_struck",
+              emojis: "💣",
+              content: `Sabotaged ${sabotageTarget}! Gained ${sabotageExp} XP.`
+            }),
+            threadID,
+            messageID
+          );
+        }
+        return api.sendMessage(
+          format({
+            title: "Sabotage",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "💥",
+            content: `Sabotage on ${sabotageTarget} failed!`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "track":
+        const trackExp = Math.floor(Math.random() * 30) + 15;
+        await rpgManager.updatePlayer(senderID, { exp: (player.exp || 0) + trackExp });
+        return api.sendMessage(
+          format({
+            title: "Track",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "👣",
+            content: `Tracked a target! Gained ${trackExp} XP.`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "assemble":
+        if (player.inventory["Scrap Metal"] < 3) {
+          return api.sendMessage(
+            format({
+              title: "Assemble",
+              titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+              titleFont: "double_struck",
+              emojis: "🚫",
+              content: `Need 3 Scrap Metal!`
+            }),
+            threadID,
+            messageID
+          );
+        }
+        player.inventory["Scrap Metal"] -= 3;
+        player.inventory["Mechanic Device"] = (player.inventory["Mechanic Device"] || 0) + 1;
+        await rpgManager.updatePlayer(senderID, { inventory: player.inventory });
+        return api.sendMessage(
+          format({
+            title: "Assemble",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "🔩",
+            content: `Assembled a Mechanic Device!`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "bountyguard":
+        const guardReward = Math.floor(Math.random() * 180) + 70;
+        await rpgManager.addBalance(senderID, guardReward);
+        return api.sendMessage(
+          format({
+            title: "BountyGuard",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "🛡️",
+            content: `Guarded a bounty! Earned $${guardReward}.`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "inspire":
+        const inspireExp = 20;
+        await rpgManager.updatePlayer(senderID, { exp: (player.exp || 0) + inspireExp });
+        return api.sendMessage(
+          format({
+            title: "Inspire",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "🎤",
+            content: `Inspired allies! Gained ${inspireExp} XP.`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "overthrow":
+        const overthrowReward = Math.floor(Math.random() * 300) + 150;
+        await rpgManager.addBalance(senderID, overthrowReward);
+        return api.sendMessage(
+          format({
+            title: "Overthrow",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "👑",
+            content: `Overthrew a tyrant! Earned $${overthrowReward}.`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "camouflage":
+        if (player.inventory["Forest Leaf"] < 1) {
+          return api.sendMessage(
+            format({
+              title: "Camouflage",
+              titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+              titleFont: "double_struck",
+              emojis: "🚫",
+              content: `Need 1 Forest Leaf!`
+            }),
+            threadID,
+            messageID
+          );
+        }
+        player.inventory["Forest Leaf"] -= 1;
+        await rpgManager.updatePlayer(senderID, { inventory: player.inventory });
+        return api.sendMessage(
+          format({
+            title: "Camouflage",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "🌿",
+            content: `Camouflaged successfully!`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "bountyraid":
+        const raidBountyReward = Math.floor(Math.random() * 350) + 150;
+        await rpgManager.addBalance(senderID, raidBountyReward);
+        return api.sendMessage(
+          format({
+            title: "BountyRaid",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "💣",
+            content: `Raided a bounty hideout! Earned $${raidBountyReward}.`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "recharge":
+        if (player.inventory["Gadget"] < 1) {
+          return api.sendMessage(
+            format({
+              title: "Recharge",
+              titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+              titleFont: "double_struck",
+              emojis: "🚫",
+              content: `Need 1 Gadget!`
+            }),
+            threadID,
+            messageID
+          );
+        }
+        player.inventory["Gadget"] -= 1;
+        const rechargeExp = 25;
+        await rpgManager.updatePlayer(senderID, { exp: (player.exp || 0) + rechargeExp, inventory: player.inventory });
+        return api.sendMessage(
+          format({
+            title: "Recharge",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "🔋",
+            content: `Recharged energy! Gained ${rechargeExp} XP.`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "skirmish":
+        const skirmishTarget = args[1];
+        if (!skirmishTarget) {
+          return api.sendMessage(
+            format({
+              title: "Skirmish",
+              titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+              titleFont: "double_struck",
+              emojis: "🚫",
+              content: `Skirmish: #rpg skirmish <userID>`
+            }),
+            threadID,
+            messageID
+          );
+        }
+        const skirmishChance = Math.random();
+        if (skirmishChance > 0.55) {
+          const skirmishReward = Math.floor(Math.random() * 90) + 30;
+          await rpgManager.addBalance(senderID, skirmishReward);
+          return api.sendMessage(
+            format({
+              title: "Skirmish",
+              titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+              titleFont: "double_struck",
+              emojis: "⚔️",
+              content: `Won skirmish vs ${skirmishTarget}! Earned $${skirmishReward}.`
+            }),
+            threadID,
+            messageID
+          );
+        }
+        return api.sendMessage(
+          format({
+            title: "Skirmish",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "💥",
+            content: `Lost skirmish vs ${skirmishTarget}!`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "bountyhide":
+        const hideChance = Math.random();
+        if (hideChance > 0.65) {
+          const hideExp = 35;
+          await rpgManager.updatePlayer(senderID, { exp: (player.exp || 0) + hideExp });
+          return api.sendMessage(
+            format({
+              title: "BountyHide",
+              titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+              titleFont: "double_struck",
+              emojis: "🌑",
+              content: `Hid from bounty! Gained ${hideExp} XP.`
+            }),
+            threadID,
+            messageID
+          );
+        }
+        return api.sendMessage(
+          format({
+            title: "BountyHide",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "💥",
+            content: `Failed to hide from bounty!`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "mend":
+        if (player.inventory["Woven Cloak"] < 1) {
+          return api.sendMessage(
+            format({
+              title: "Mend",
+              titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+              titleFont: "double_struck",
+              emojis: "🚫",
+              content: `Need 1 Woven Cloak!`
+            }),
+            threadID,
+            messageID
+          );
+        }
+        player.inventory["Woven Cloak"] -= 1;
+        player.inventory["Mended Cloak"] = (player.inventory["Mended Cloak"] || 0) + 1;
+        await rpgManager.updatePlayer(senderID, { inventory: player.inventory });
+        return api.sendMessage(
+          format({
+            title: "Mend",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "🧵",
+            content: `Mended a Cloak!`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "bountyseek":
+        const seekReward = Math.floor(Math.random() * 220) + 90;
+        await rpgManager.addBalance(senderID, seekReward);
+        return api.sendMessage(
+          format({
+            title: "BountySeek",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "🔎",
+            content: `Sought a bounty! Earned $${seekReward}.`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "rallydefend":
+        const rallyDefendExp = 25;
+        await rpgManager.updatePlayer(senderID, { exp: (player.exp || 0) + rallyDefendExp });
+        return api.sendMessage(
+          format({
+            title: "RallyDefend",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "🏰",
+            content: `Rallied to defend! Gained ${rallyDefendExp} XP.`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "illuminate":
+        const illuminateExp = Math.floor(Math.random() * 30) + 15;
+        await rpgManager.updatePlayer(senderID, { exp: (player.exp || 0) + illuminateExp });
+        return api.sendMessage(
+          format({
+            title: "Illuminate",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "💡",
+            content: `Illuminated the dark! Gained ${illuminateExp} XP.`
+          }),
+          threadID,
+          messageID
+        );
+
+      case "bountytrap":
+        const trapChance = Math.random();
+        if (trapChance > 0.6) {
+          const trapReward = Math.floor(Math.random() * 150) + 50;
+          await rpgManager.addBalance(senderID, trapReward);
+          return api.sendMessage(
+            format({
+              title: "BountyTrap",
+              titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+              titleFont: "double_struck",
+              emojis: "🪤",
+              content: `Trapped a bounty! Earned $${trapReward}.`
+            }),
+            threadID,
+            messageID
+          );
+        }
+        return api.sendMessage(
+          format({
+            title: "BountyTrap",
+            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+            titleFont: "double_struck",
+            emojis: "💥",
+            content: `Trap failed!`
+          }),
+          threadID,
+          messageID
+        );
+        
       default:
         return api.sendMessage(
           format({
