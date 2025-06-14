@@ -100,6 +100,7 @@ const loadCommands = () => {
 };
 
 loadCommands();
+loadAuroraCommands();
 let appState = {};
 
 try {
