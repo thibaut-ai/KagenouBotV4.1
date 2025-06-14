@@ -500,7 +500,6 @@ app.get('/', async (req, res) => {
                 <p>UID: ${botUID}</p>
                 <p>Status: Active</p>
                 <p>Prefix: ${config.Prefix[0] || '#'}</p>
-                <img src="https://imgur.com/a/AqHsPNs.jpg" alt="Bot Icon">
             </div>
             <div class="thread-list">
                 <h3>Active Threads</h3>
