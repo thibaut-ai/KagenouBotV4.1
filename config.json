@@ -1,10 +1,10 @@
 {
-  "admins": ["100090706983249"],
+  "admins": [],
   "moderators": [],
-  "developers": ["100090706983249"],
+  "developers": [],
   "Prefix": [
     "/"
   ],
-  "botName": "KagenouBotV3",
-  "mongoUri": "mongodb+srv://aljurdev:aljurdev112233@cluster0.shw5rft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+  "botName": "KagenouBotV4",
+  "mongoUri": ""
 }
