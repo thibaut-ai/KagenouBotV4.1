@@ -47,14 +47,6 @@ const loadBannedUsers = () => {
   }
 };
 
-function getUserRole(uid) {
-  uid = String(uid);
-  if (config.developers && config.developers.includes(uid)) return 3;
-  if (config.moderators && config.moderators.includes(uid)) return 2;
-  if (config.admins && config.admins.includes(uid)) return 1;
-  return 0;
-}
-
 async function handleReply(api, event) {
   const replyData = global.Kagenou.replies[event.messageReply?.messageID];
   if (!replyData) return;
@@ -223,7 +215,7 @@ const handleMessage = async (api, event) => {
       commandName = message.slice(prefix.length).split(/ +/)[0].toLowerCase();
       args = message.slice(prefix.length).split(/ +/).slice(1);
       command = commands.get(commandName);
-      if (command && command.config && command.config.nonPrefix && message === commandName) command = null;
+      if (command && command.nonPrefix && message === commandName) command = null;
       break;
     }
   }
@@ -231,20 +223,11 @@ const handleMessage = async (api, event) => {
     command = nonPrefixCommands.get(commandName);
   }
   if (command) {
-    const userRole = getUserRole(senderID);
-    const commandRole = command.config?.role || 0; // Use config.role if available
-    if (userRole < commandRole) {
-      return api.sendMessage(
-        ` You do not have permission to use this command. Required role: ${commandRole} (0=Everyone, 1=Admin, 2=Moderator, 3=Developer), your role: ${userRole}.`,
-        threadID,
-        messageID
-      );
-    }
     const disabledCommandsList = global.disabledCommands.get("disabled") || [];
     if (disabledCommandsList.includes(commandName)) {
       return api.sendMessage(`${commandName.charAt(0).toUpperCase() + commandName.slice(1)} Command has been disabled.`, threadID, messageID);
     }
-    const cooldown = command.config?.cooldown || 0;
+    const cooldown = command.cooldown || 0;
     const cooldownMessage = checkCooldown(senderID, commandName, cooldown || 3);
     if (cooldownMessage) return sendMessage(api, { threadID, message: cooldownMessage, messageID });
     setCooldown(senderID, commandName, cooldown || 3);
@@ -444,7 +427,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 /*app.use(express.static(path.join(__dirname, 'dashboard', 'public')));
 */
-
 
 const startBot = async () => {
   login({ appState }, (err, api) => {
