@@ -3,7 +3,7 @@
   "moderators": [],
   "developers": [],
   "Prefix": [
-    "#"
+    "/"
   ],
   "botName": "KagenouBotV3",
   "mongoUri": "mongodb+srv://aljurdev:aljurdev112233@cluster0.shw5rft.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
