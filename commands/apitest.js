@@ -18,7 +18,7 @@ module.exports = {
 
     const { threadID, messageID, senderID } = event;
 
- !admins.includes(senderID)) {
+ if (!admins.includes(senderID)) {
 
             let errorMessage = `════『 APITEST 』════\n\n`;
 
