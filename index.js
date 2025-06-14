@@ -2,7 +2,6 @@
  * @author Aljur pogoy
  * Thank you for using our Botfile ✨
  */
-
 require("ts-node").register();
 require("./core/global");
 const { MongoClient } = require("mongodb");
@@ -33,7 +32,7 @@ const reloadCommands = () => {
   loadCommands();
 };
 global.reloadCommands = reloadCommands;
-global.threadState = { active: new Map(), approved: new Map(), pending: new Map() };
+global.threadState = { active: new Map(), approved: new Map(), pending: Map() };
 global.client = { reactionListener: {}, globalData: new Map() };
 global.Kagenou = { autodlEnabled: false, replies: {} };
 if (fs.existsSync(globalDataFile)) {
@@ -47,14 +46,6 @@ const loadBannedUsers = () => {
     bannedUsers = {};
   }
 };
-
-function getUserRole(uid) {
-  uid = String(uid);
-  if (config.developers.includes(uid)) return 3;
-  if (config.moderators.includes(uid)) return 2;
-  if (config.admins.includes(uid)) return 1;
-  return 0;
-}
 
 async function handleReply(api, event) {
   const replyData = global.Kagenou.replies[event.messageReply?.messageID];
@@ -70,7 +61,6 @@ async function handleReply(api, event) {
     api.sendMessage(`An error occurred while processing your reply: ${err.message}`, event.threadID, event.messageID);
   }
 }
-
 
 const loadCommands = () => {
   const retroGradient = require("gradient-string").retro;
@@ -103,14 +93,18 @@ const loadCommands = () => {
 
 loadCommands();
 loadAuroraCommands();
-
 let appState = {};
 
 try {
-  appState = JSON.parse(fs.readFileSync("./appstate.dev.json", "utf8"));
+  const appStateData = fs.readFileSync("./appstate.dev.json", "utf8");
+  appState = JSON.parse(appStateData);
+  console.log("[CONFIG] Loaded appstate.dev.json:", appState);
 } catch (error) {
-  console.error("Error loading appstate.json:", error);
+  console.error("Error loading appstate.dev.json or file not found:", error);
+  console.warn("Using empty appState as fallback.");
+  appState = {};
 }
+
 try {
   const configData = JSON.parse(fs.readFileSync(configFile, "utf8"));
   console.log("[CONFIG] Loaded config.json:", configData);
@@ -215,7 +209,7 @@ const handleMessage = async (api, event) => {
   let commandName = words[0].toLowerCase();
   let args = words.slice(1);
   let command = null;
-  let prefix = config.Prefix[0]; // Declare prefix here as the default system prefix
+  let prefix = config.Prefix[0];
   for (const prefix of prefixes) {
     if (message.startsWith(prefix)) {
       commandName = message.slice(prefix.length).split(/ +/)[0].toLowerCase();
@@ -229,15 +223,6 @@ const handleMessage = async (api, event) => {
     command = nonPrefixCommands.get(commandName);
   }
   if (command) {
-    const userRole = getUserRole(senderID);
-    const commandRole = command.role || 0;
-    if (userRole < commandRole) {
-      return api.sendMessage(
-        ` You do not have permission to use this command. Required role: ${commandRole} (0=Everyone, 1=Admin, 2=Moderator, 3=Developer), your role: ${userRole}.`,
-        threadID,
-        messageID
-      );
-    }
     const disabledCommandsList = global.disabledCommands.get("disabled") || [];
     if (disabledCommandsList.includes(commandName)) {
       return api.sendMessage(`${commandName.charAt(0).toUpperCase() + commandName.slice(1)} Command has been disabled.`, threadID, messageID);
@@ -302,7 +287,7 @@ async function handleReaction(api, event) {
           delete global.Kagenou.replies[event.messageID];
         } catch (error) {
           console.error(`[REACTION ERROR] Failed to process reaction for '${command.config.name}':`, error);
-          api.sendMessage(`Error processing reaction: ${error.message}`, event.threadID, event.messageID);
+          api.sendMessage(`Error processing reaction: ${error.message}`, threadID, event.messageID);
         }
       }
     }
@@ -377,7 +362,7 @@ const startListeningForMessages = (api) => {
         }
       }
     }
-   if (event.type === "message_reaction") {
+    if (event.type === "message_reaction") {
       await handleReaction(api, event);
     }
     if (event.type === "message" && event.body && event.body.startsWith(config.Prefix[0])) {
@@ -440,8 +425,6 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-/*app.use(express.static(path.join(__dirname, 'dashboard', 'public')));
-*/
 
 const startBot = async () => {
   login({ appState }, (err, api) => {
@@ -469,6 +452,10 @@ const startBot = async () => {
       const botUID = api.getCurrentUserID();
       const botName = config.botName || 'KagenouBotV3';
       const avatarUrl = `https://graph.facebook.com/${botUID}/picture?type=large`;
+      const activeThreads = Array.from(global.threadState.active.keys()).map(threadID => ({
+        id: threadID,
+        name: global.threadState.active.get(threadID)?.name || `Thread ${threadID}`
+      }));
 
       const { default: fetch } = require('node-fetch');
       fetch(avatarUrl)
@@ -492,15 +479,39 @@ const startBot = async () => {
                     .bot-card h2 { color: #00ffcc; margin-bottom: 20px; }
                     .bot-card p { font-size: 1.1em; margin: 10px 0; color: #b0b0b0; }
                     .bot-card img { max-width: 150px; border: 3px solid #00ffcc; border-radius: 10px; }
+                    .thread-list { margin-top: 20px; }
+                    .thread-list h3 { color: #00ffcc; }
+                    .thread-list ul { list-style: none; padding: 0; }
+                    .thread-list li { margin: 10px 0; color: #b0b0b0; }
                     .footer { text-align: center; padding: 20px; background: #1a2a44; bottom: 0; width: 100%; color: #b0b0b0; }
                     @media (max-width: 600px) { .nav { flex-direction: column; align-items: center; } .content { padding: 20px 10px; } }
                 </style>
             </head>
             <body>
                 <div class="header"><h1>KagenouBotV3 Portfolio</h1></div>
-                <div class="content"><div class="bot-card"><h2>${botName}</h2><p>UID: ${botUID}</p><p>Status: Active</p><p>Prefix: ${config.Prefix[0] || '#'}</p><img src="${avatarUrl}" alt="Bot Profile"></div></div>
-                <div class="footer"><p>© 2025 Aljur Pogoy| All rights reserved.</p><p>Time: <span id="time"></span> | Ping: 100</p></div>
-                <script>function updateTime(){document.getElementById('time').textContent=new Date().toLocaleTimeString()}setInterval(updateTime,1000);updateTime();</script>
+                <div class="content">
+                    <div class="bot-card">
+                        <h2>${botName}</h2>
+                        <p>UID: ${botUID}</p>
+                        <p>Status: Active</p>
+                        <p>Prefix: ${config.Prefix[0] || '#'}</p>
+                        <img src="${avatarUrl}" alt="Bot Profile">
+                    </div>
+                    <div class="thread-list">
+                        <h3>Active Threads</h3>
+                        <ul>
+                            ${activeThreads.map(thread => `<li>${thread.name} (ID: ${thread.id})</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer">
+                    <p>© 2025 Aljur Pogoy | All rights reserved.</p>
+                    <p>Time: <span id="time"></span> | Ping: 100</p>
+                </div>
+                <script>
+                    function updateTime(){document.getElementById('time').textContent=new Date().toLocaleTimeString()}
+                    setInterval(updateTime,1000);updateTime();
+                </script>
             </body>
             </html>
           `);
@@ -525,6 +536,10 @@ const startBot = async () => {
                     .bot-card h2 { color: #00ffcc; margin-bottom: 20px; }
                     .bot-card p { font-size: 1.1em; margin: 10px 0; color: #b0b0b0; }
                     .bot-card img { max-width: 150px; border: 3px solid #00ffcc; border-radius: 10px; }
+                    .thread-list { margin-top: 20px; }
+                    .thread-list h3 { color: #00ffcc; }
+                    .thread-list ul { list-style: none; padding: 0; }
+                    .thread-list li { margin: 10px 0; color: #b0b0b0; }
                     .footer { text-align: center; padding: 20px; background: #1a2a44; bottom: 0; width: 100%; color: #b0b0b0; }
                     @media (max-width: 600px) { .nav { flex-direction: column; align-items: center; } .content { padding: 20px 10px; } }
                 </style>
@@ -532,9 +547,29 @@ const startBot = async () => {
             <body>
                 <div class="header"><h1>KagenouBotV3 Portfolio</h1></div>
                 <div class="nav"><a href="/">Home</a><a href="/terms">Terms</a></div>
-                <div class="content"><div class="bot-card"><h2>${botName}</h2><p>UID: ${botUID}</p><p>Status: Active</p><p>Prefix: ${config.Prefix[0] || '#'}</p><img src="https://via.placeholder.com/150" alt="Bot Profile"></div></div>
-                <div class="footer"><p>© 2025 Kaizenji | All rights reserved.</p><p>Time: <span id="time"></span> | Ping: N/A</p></div>
-                <script>function updateTime(){document.getElementById('time').textContent=new Date().toLocaleTimeString()}setInterval(updateTime,1000);updateTime();</script>
+                <div class="content">
+                    <div class="bot-card">
+                        <h2>${botName}</h2>
+                        <p>UID: ${botUID}</p>
+                        <p>Status: Active</p>
+                        <p>Prefix: ${config.Prefix[0] || '#'}</p>
+                        <img src="https://via.placeholder.com/150" alt="Bot Profile">
+                    </div>
+                    <div class="thread-list">
+                        <h3>Active Threads</h3>
+                        <ul>
+                            ${activeThreads.map(thread => `<li>${thread.name} (ID: ${thread.id})</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer">
+                    <p>© 2025 Kaizenji | All rights reserved.</p>
+                    <p>Time: <span id="time"></span> | Ping: N/A</p>
+                </div>
+                <script>
+                    function updateTime(){document.getElementById('time').textContent=new Date().toLocaleTimeString()}
+                    setInterval(updateTime,1000);updateTime();
+                </script>
             </body>
             </html>
           `);
