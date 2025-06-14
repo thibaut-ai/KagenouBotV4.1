@@ -62,9 +62,10 @@ module.exports = {
 module.exports = {
   config: {
     name: "ping",
+    author: "Aljur pogoy",
     description: "Responds with Pong!",
     role: 0,
-    cooldown: 5,
+    usage: "<prefix>ping",
     aliases: ["p"],
   },
   async run({ api, event }) {
