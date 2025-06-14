@@ -75,7 +75,7 @@ module.exports = {
 ```
 
 
-# KagenouBot Ver 4.0.0 is now have own styler, inspired by cassidy-styler, but similar to cassidy-styler.
+# KagenouBot Ver 4.0.0 is now have own styler, inspired by cassidy-styler.
 
 ### Usage;
 ```js
