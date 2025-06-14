@@ -32,7 +32,7 @@ const reloadCommands = () => {
   loadCommands();
 };
 global.reloadCommands = reloadCommands;
-global.threadState = { active: new Map(), approved: new Map(), pending: Map() };
+global.threadState = { active: new Map(), approved: new Map(), pending: new Map() };
 global.client = { reactionListener: {}, globalData: new Map() };
 global.Kagenou = { autodlEnabled: false, replies: {} };
 if (fs.existsSync(globalDataFile)) {
