@@ -4004,21 +4004,39 @@ case "prospect":
           threadID,
           messageID
         );
-        
-      default:
-        return api.sendMessage(
-          format({
-            title: "RPG",
-            titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
-            titleFont: "double_struck",
-            emojis: "🏹",
-            content: `**Available commands**:\n- **rpg** register\n- **rpg** stats\n- **rpg** earn\n- **rpg** level\n- **rpg** battle\n- **rpg** inventory\n- **rpg** shop\n- **rpg** buy <item>\n- **rpg** quest\n- **rpg** train\n- **rpg** heal\n- **rpg** upgrade\n- **rpg** gift <amount> <userID>\n- **rpg** leaderboard\n- **rpg** reset\n- **rpg** trade <item> <quantity> <userID>\n- **rpg** explore\n- **rpg** fish\n- **rpg** mine\n- **rpg** craft <item>\n- **rpg** sell <item>\n- **rpg** pet <type>\n- **rpg** feed\n- **rpg** guild <name>\n- **rpg** arena <userID>\n- **rpg** tournament\n- **rpg** rest\n- **rpg** journey\n- **rpg** hunt\n- **rpg** forge\n- **rpg** alchemy\n- **rpg** tame\n- **rpg** ride\n- **rpg** camp\n- **rpg** scout\n- **rpg** gather\n- **rpg** build\n- **rpg** tradeup\n- **rpg** enchant\n- **rpg** questlist\n- **rpg** profile\n- **rpg** event\n- **rpg** duel <userID>\n- **rpg** bounty\n- **rpg** steal <userID>\n- **rpg** raid\n- **rpg** defend\n- **rpg** repair\n- **rpg** upgradeweapon\n- **rpg** summon\n- **rpg** harvest\n- **rpg** cook\n- **rpg** tradeall <userID>\n- **rpg** auction\n- **rpg** meditate\n- **rpg** bargain <userID>\n- **rpg** sacrifice\n- **rpg** exploredeep\n- **rpg** trainhard\n- **rpg** questelite\n- **rpg** guildwar\n- **rpg** collect\n- **rpg** barter <item>\n- **rpg** questdaily\n- **rpg** adventure\n- **rpg** treasure\n- **rpg** bless\n- **rpg** challenge\n- **rpg** guard\n- **rpg** explorecave`
-          }),
-          threadID,
-          messageID
-        );
-    }
-  }
-};
       
+  default:
+  const allSubcommands = [
+    "register", "stats", "earn", "level", "battle", "inventory", "shop", "buy", "quest", "train", "heal", "upgrade",
+    "gift", "leaderboard", "reset", "trade", "explore", "fish", "mine", "craft", "sell", "pet", "feed", "guild",
+    "arena", "tournament", "rest", "journey", "hunt", "forge", "alchemy", "tame", "ride", "camp", "scout", "gather",
+    "build", "tradeup", "enchant", "questlist", "profile", "event", "duel", "bounty", "steal", "raid", "defend",
+    "repair", "upgradeweapon", "summon", "harvest", "cook", "tradeall", "auction", "meditate", "bargain", "sacrifice",
+    "exploredeep", "trainhard", "questelite", "guildwar", "collect", "barter", "questdaily", "adventure", "treasure",
+    "bless", "challenge", "guard", "explorecave", "farm", "brew", "excavate", "dance", "pray", "forgearmor", "rescue",
+    "navigate", "barricade", "study", "bribe", "disguise", "sneak", "ambush", "escape", "patrol", "investigate",
+    "bountyhunt", "rally", "forage", "carve", "scavenge", "chant", "plunder", "construct", "bountytrack", "celebrate",
+    "disarm", "exploreforest", "haggle", "reinforce", "scry", "smuggle", "tinker", "voyage", "bountycollect",
+    "rallytroops", "decode", "bountyescape", "ritual", "survey", "prospect", "weave", "scoutmountain", "perform",
+    "plow", "refine", "sabotage", "track", "assemble", "bountyguard", "inspire", "overthrow", "camouflage",
+    "bountyraid", "recharge", "skirmish", "bountyhide", "mend", "bountyseek", "rallydefend", "illuminate", "bountytarp",
+    "cultivate", "smelt", "scoutdesert", "juggle", "plundersea", "fortify", "bountysearch", "feast", "evade",
+    "exploreswamp", "negotiate", "upgradearmor", "divine", "smugglecargo", "upgradegear", "navigateocean",
+    "bountyintercept", "motivate", "overrun", "cloak", "bountyambush", "restore", "skirmishraid", "bountyevade",
+    "tailor", "bountytrackdown", "rallyattack", "enlighten", "bountycapture"
+  ];
 
+  const totalSubcommands = allSubcommands.length;
+  const commandList = allSubcommands.map(cmd => `**rpg** ${cmd}${cmd === "buy" || cmd === "craft" || cmd === "sell" || cmd === "gift" || cmd === "trade" || cmd === "bargain" || cmd === "barter" || cmd === "duel" || cmd === "arena" || cmd === "steal" || cmd === "raid" || cmd === "haggle" || cmd === "ambush" || cmd === "sabotage" || cmd === "skirmish" || cmd === "skirmishraid" ? " <args>" : ""}`).join("\n- ");
+
+  return api.sendMessage(
+    format({
+      title: "RPG",
+      titlePattern: `{emojis} ${UNIRedux.arrow} {word}`,
+      titleFont: "double_struck",
+      emojis: "🏹",
+      content: `**Total Subcommands**: ${totalSubcommands}\n\n**Available commands**:\n- ${commandList}`
+    }),
+    threadID,
+    messageID
+  );
