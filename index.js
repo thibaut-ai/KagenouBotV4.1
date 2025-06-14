@@ -506,7 +506,7 @@ const startBot = async () => {
                         <p>UID: ${botUID}</p>
                         <p>Status: Active</p>
                         <p>Prefix: ${config.Prefix[0] || '#'}</p>
-                        <img src="image/Shadow.jpg"Bot Profile">
+                        <img src="./image/Shadow.jpg"Bot Profile">
                     </div>
                     <div class="thread-list">
                         <h3>Active Threads</h3>
