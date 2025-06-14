@@ -448,135 +448,136 @@ const startBot = async () => {
     global.api = api;
     startListeningWithAutoRestart(api);
 
-    app.get('/', async (req, res) => {
-      const botUID = api.getCurrentUserID();
-      const botName = config.botName || 'KagenouBotV3';
-      let activeThreads = [];
+    
+app.get('/', async (req, res) => {
+  const botUID = api.getCurrentUserID();
+  const botName = config.botName || 'KagenouBotV3';
+  let activeThreads = [];
 
-      if (db) {
-        try {
-          const threads = await db.db("threads").find({}).toArray();
-          if (threads && threads.length > 0) {
-            activeThreads = threads.map(thread => ({
-              id: thread.threadID,
-              name: thread.name || `Unnamed Thread (ID: ${thread.threadID})`
-            }));
-          }
-        } catch (error) {
-          console.error("Error fetching threads from database:", error);
-        }
+  if (db) {
+    try {
+      const threads = await db.db("threads").find({}).toArray();
+      if (threads && threads.length > 0) {
+        activeThreads = threads.map(thread => ({
+          id: thread.threadID,
+          name: thread.name || `Unnamed Thread (ID: ${thread.threadID})`
+        }));
       }
+    } catch (error) {
+      console.error("Error fetching threads from database:", error);
+    }
+  }
 
-      res.send(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <title>KagenouBotV3 Portfolio</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                body { margin: 0; font-family: 'Arial', sans-serif; background: linear-gradient(135deg, #0a0f1c, #1a2a44); color: #e0e0e0; overflow-x: hidden; }
-                .header { background: #1a2a44; padding: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-                .header h1 { margin: 0; font-size: 2.5em; color: #00ffcc; text-transform: uppercase; }
-                .nav { display: flex; justify-content: center; gap: 20px; margin: 20px 0; }
-                .nav a { color: #00ffcc; text-decoration: none; font-size: 1.2em; padding: 10px 20px; transition: color 0.3s; }
-                .nav a:hover { color: #ff4444; }
-                .content { max-width: 800px; margin: 0 auto; padding: 40px 20px; text-align: center; }
-                .bot-card { background: rgba(26,42,68,0.9); padding: 30px; border-radius: 15px; box-shadow: 0 0 20px rgba(0,255,204,0.2); }
-                .bot-card h2 { color: #00ffcc; margin-bottom: 20px; }
-                .bot-card p { font-size: 1.1em; margin: 10px 0; color: #b0b0b0; }
-                .thread-list { margin-top: 20px; }
-                .thread-list h3 { color: #00ffcc; }
-                .thread-list ul { list-style: none; padding: 0; }
-                .thread-list li { margin: 10px 0; color: #b0b0b0; }
-                .footer { text-align: center; padding: 20px; background: #1a2a44; bottom: 0; width: 100%; color: #b0b0b0; }
-                @media (max-width: 600px) { .nav { flex-direction: column; align-items: center; } .content { padding: 20px 10px; } }
-            </style>
-        </head>
-        <body>
-            <div class="header"><h1>KagenouBotV3 Portfolio</h1></div>
-            <div class="content">
-                <div class="bot-card">
-                    <h2>${botName}</h2>
-                    <p>UID: ${botUID}</p>
-                    <p>Status: Active</p>
-                    <p>Prefix: ${config.Prefix[0] || '#'}</p>
-                    <img src="./image/Shadow.jpg" alt="Bot Profile">
-                </div>
-                <div class="thread-list">
-                    <h3>Active Threads</h3>
-                    <ul>
-                        ${activeThreads.map(thread => `<li>${thread.name} (ID: ${thread.id})</li>`).join('')}
-                    </ul>
-                </div>
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <title>KagenouBotV3 Portfolio</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body { margin: 0; font-family: 'Arial', sans-serif; background: linear-gradient(135deg, #0a0f1c, #1a2a44); color: #e0e0e0; overflow-x: hidden; }
+            .header { background: #1a2a44; padding: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+            .header h1 { margin: 0; font-size: 2.5em; color: #00ffcc; text-transform: uppercase; }
+            .nav { display: flex; justify-content: center; gap: 20px; margin: 20px 0; }
+            .nav a { color: #00ffcc; text-decoration: none; font-size: 1.2em; padding: 10px 20px; transition: color 0.3s; }
+            .nav a:hover { color: #ff4444; }
+            .content { max-width: 800px; margin: 0 auto; padding: 40px 20px; text-align: center; }
+            .bot-card { background: rgba(26,42,68,0.9); padding: 30px; border-radius: 15px; box-shadow: 0 0 20px rgba(0,255,204,0.2); }
+            .bot-card h2 { color: #00ffcc; margin-bottom: 20px; }
+            .bot-card p { font-size: 1.1em; margin: 10px 0; color: #b0b0b0; }
+            .thread-list { margin-top: 20px; }
+            .thread-list h3 { color: #00ffcc; }
+            .thread-list ul { list-style: none; padding: 0; }
+            .thread-list li { margin: 10px 0; color: #b0b0b0; }
+            .footer { text-align: center; padding: 20px; background: #1a2a44; bottom: 0; width: 100%; color: #b0b0b0; }
+            @media (max-width: 600px) { .nav { flex-direction: column; align-items: center; } .content { padding: 20px 10px; } }
+        </style>
+    </head>
+    <body>
+        <div class="header"><h1>KagenouBotV3 Portfolio</h1></div>
+        <div class="content">
+            <div class="bot-card">
+                <h2>${botName}</h2>
+                <p>UID: ${botUID}</p>
+                <p>Status: Active</p>
+                <p>Prefix: ${config.Prefix[0] || '#'}</p>
+                <img src="https://imgur.com/a/AqHsPNs.jpg" alt="Dashboard Icon">
             </div>
-            <div class="footer">
-                <p>© 2025 Aljur Pogoy | All rights reserved.</p>
-                <p>Time: <span id="time"></span> | Ping: 100</p>
+            <div class="thread-list">
+                <h3>Active Threads</h3>
+                <ul>
+                    ${activeThreads.map(thread => `<li>${thread.name} (ID: ${thread.id})</li>`).join('')}
+                </ul>
             </div>
-            <script>
-                function updateTime(){document.getElementById('time').textContent=new Date().toLocaleTimeString()}
-                setInterval(updateTime,1000);updateTime();
-            </script>
-        </body>
-        </html>
-      `);
+        </div>
+        <div class="footer">
+            <p>© 2025 Aljur Pogoy | All rights reserved.</p>
+            <p>Time: <span id="time"></span> | Ping: 100</p>
+        </div>
+        <script>
+            function updateTime(){document.getElementById('time').textContent=new Date().toLocaleTimeString()}
+            setInterval(updateTime,1000);updateTime();
+        </script>
+    </body>
+    </html>
+  `);
 
-      res.send(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <title>KagenouBotV3 Portfolio</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                body { margin: 0; font-family: 'Arial', sans-serif; background: linear-gradient(135deg, #0a0f1c, #1a2a44); color: #e0e0e0; overflow-x: hidden; }
-                .header { background: #1a2a44; padding: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-                .header h1 { margin: 0; font-size: 2.5em; color: #00ffcc; text-transform: uppercase; }
-                .nav { display: flex; justify-content: center; gap: 20px; margin: 20px 0; }
-                .nav a { color: #00ffcc; text-decoration: none; font-size: 1.2em; padding: 10px 20px; transition: color 0.3s; }
-                .nav a:hover { color: #ff4444; }
-                .content { max-width: 800px; margin: 0 auto; padding: 40px 20px; text-align: center; }
-                .bot-card { background: rgba(26,42,68,0.9); padding: 30px; border-radius: 15px; box-shadow: 0 0 20px rgba(0,255,204,0.2); }
-                .bot-card h2 { color: #00ffcc; margin-bottom: 20px; }
-                .bot-card p { font-size: 1.1em; margin: 10px 0; color: #b0b0b0; }
-                .thread-list { margin-top: 20px; }
-                .thread-list h3 { color: #00ffcc; }
-                .thread-list ul { list-style: none; padding: 0; }
-                .thread-list li { margin: 10px 0; color: #b0b0b0; }
-                .footer { text-align: center; padding: 20px; background: #1a2a44; bottom: 0; width: 100%; color: #b0b0b0; }
-                @media (max-width: 600px) { .nav { flex-direction: column; align-items: center; } .content { padding: 20px 10px; } }
-            </style>
-        </head>
-        <body>
-            <div class="header"><h1>KagenouBotV3 Portfolio</h1></div>
-            <div class="nav"><a href="/">Home</a><a href="/terms">Terms</a></div>
-            <div class="content">
-                <div class="bot-card">
-                    <h2>${botName}</h2>
-                    <p>UID: ${botUID}</p>
-                    <p>Status: Active</p>
-                    <p>Prefix: ${config.Prefix[0] || '#'}</p>
-                    <img src="./image/pic.jpg" alt="Bot Profile">
-                </div>
-                <div class="thread-list">
-                    <h3>Active Threads</h3>
-                    <ul>
-                        ${activeThreads.map(thread => `<li>${thread.name} (ID: ${thread.id})</li>`).join('')}
-                    </ul>
-                </div>
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <title>KagenouBotV3 Portfolio</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body { margin: 0; font-family: 'Arial', sans-serif; background: linear-gradient(135deg, #0a0f1c, #1a2a44); color: #e0e0e0; overflow-x: hidden; }
+            .header { background: #1a2a44; padding: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+            .header h1 { margin: 0; font-size: 2.5em; color: #00ffcc; text-transform: uppercase; }
+            .nav { display: flex; justify-content: center; gap: 20px; margin: 20px 0; }
+            .nav a { color: #00ffcc; text-decoration: none; font-size: 1.2em; padding: 10px 20px; transition: color 0.3s; }
+            .nav a:hover { color: #ff4444; }
+            .content { max-width: 800px; margin: 0 auto; padding: 40px 20px; text-align: center; }
+            .bot-card { background: rgba(26,42,68,0.9); padding: 30px; border-radius: 15px; box-shadow: 0 0 20px rgba(0,255,204,0.2); }
+            .bot-card h2 { color: #00ffcc; margin-bottom: 20px; }
+            .bot-card p { font-size: 1.1em; margin: 10px 0; color: #b0b0b0; }
+            .thread-list { margin-top: 20px; }
+            .thread-list h3 { color: #00ffcc; }
+            .thread-list ul { list-style: none; padding: 0; }
+            .thread-list li { margin: 10px 0; color: #b0b0b0; }
+            .footer { text-align: center; padding: 20px; background: #1a2a44; bottom: 0; width: 100%; color: #b0b0b0; }
+            @media (max-width: 600px) { .nav { flex-direction: column; align-items: center; } .content { padding: 20px 10px; } }
+        </style>
+    </head>
+    <body>
+        <div class="header"><h1>KagenouBotV3 Portfolio</h1></div>
+        <div class="nav"><a href="/">Home</a><a href="/terms">Terms</a></div>
+        <div class="content">
+            <div class="bot-card">
+                <h2>${botName}</h2>
+                <p>UID: ${botUID}</p>
+                <p>Status: Active</p>
+                <p>Prefix: ${config.Prefix[0] || '#'}</p>
+                <img src="https://i.imgur.com/YourImageID.jpg" alt="N/A">
             </div>
-            <div class="footer">
-                <p>© 2025 Kaizenji | All rights reserved.</p>
-                <p>Time: <span id="time"></span> | Ping: N/A</p>
+            <div class="thread-list">
+                <h3>Active Threads</h3>
+                <ul>
+                    ${activeThreads.map(thread => `<li>${thread.name} (ID: ${thread.id})</li>`).join('')}
+                </ul>
             </div>
-            <script>
-                function updateTime(){document.getElementById('time').textContent=new Date().toLocaleTimeString()}
-                setInterval(updateTime,1000);updateTime();
-            </script>
-        </body>
-        </html>
-      `);
-    });
-
+        </div>
+        <div class="footer">
+            <p>© 2025 Kaizenji | All rights reserved.</p>
+            <p>Time: <span id="time"></span> | Ping: N/A</p>
+        </div>
+        <script>
+            function updateTime(){document.getElementById('time').textContent=new Date().toLocaleTimeString()}
+            setInterval(updateTime,1000);updateTime();
+        </script>
+    </body>
+    </html>
+  `);
+});
+      
     const dashboardPort = 3000;
     app.listen(dashboardPort, () => {
       console.log(`[DASHBOARD] Dashboard running on http://localhost:${dashboardPort}`);
