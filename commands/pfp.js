@@ -21,11 +21,15 @@ module.exports = {
       const userInfo = await api.getUserInfo(targetID);
       const pfpUrl = userInfo[targetID].profileUrl || `https://graph.facebook.com/${targetID}/picture?type=large`;
 
-      await api.sendMessage(
-        `Here’s the profile picture link for user ID ${targetID}: ${pfpUrl}`,
-        threadID,
-        messageID
-      );
+      // Send the profile picture as an attachment
+      await api.sendMessage({
+        body: `Here’s the profile picture for user ID ${targetID}:`,
+        attachment: await global.nodemodule["axios"]({
+          url: pfpUrl,
+          method: 'GET',
+          responseType: 'stream'
+        }).then(response => response.data)
+      }, threadID, messageID);
     } catch (error) {
       console.error(`Error fetching profile picture: ${error.message}`);
       await api.sendMessage(
