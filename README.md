@@ -81,13 +81,13 @@ module.exports = {
 ```js
 const msg = AuroraBetaStyler.format({
 
-        title: "SkyCastle",
+        title: "Law",
 
-        emoji: "🏰",
+        emoji: "📜",
 
         titlefont: "bold",
 
-        content: content,
+        content: "A law",
 
         contentfont: "fancy", // you can just change to any fonts
 
@@ -97,18 +97,17 @@ const msg = AuroraBetaStyler.format({
 
 console.log(msg)
 
-/* ❲ 🏰 ❳ 𝗦𝗸𝘆𝗖𝗮𝘀𝘁𝗹𝗲
-━━━━━━━━━━━━━━━
-𝒜 𝒸𝒶𝓈𝓉𝓁ℯ
-━━━━━━━━━━━━━━━
-Developed by: 𝗔𝗹𝗷𝘂𝗿 𝗽𝗼𝗴𝗼𝘆
-*/
+━━━『 📜 Law // with a bold font 』━━━
+A law // with a fancy font
+━━━━━━━━━━━━━━━━━━━
+Developed by: Aljur pogoy // with a bold font because it supports **BOLD**.
+
 ```
 
 
 ---
 
-## Configuration Guide
+## Configuration Guided 
 
 ### config.json
 ```json
