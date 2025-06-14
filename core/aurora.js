@@ -1,3 +1,8 @@
+/* 
+* @author Aurora
+*/
+
+
 const fs = require("fs-extra");
 
 const path = require("path");
@@ -68,9 +73,9 @@ function isAuroraAdmin(senderID) {
 
 function handleAuroraCommand(api, event) {
 
-  if (!global.auroraConfig) loadAuroraConfig(); // Ensure config is loaded
+  if (!global.auroraConfig) loadAuroraConfig();
 
-  aurora.api = api; // Set the API instance for aurora.sendMessage
+  aurora.api = api; 
 
   const { body, threadID, messageID, senderID } = event;
 
