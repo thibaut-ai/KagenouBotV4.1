@@ -448,14 +448,25 @@ const startBot = async () => {
     global.api = api;
     startListeningWithAutoRestart(api);
 
-    app.get('/', (req, res) => {
+    app.get('/', async (req, res) => {
       const botUID = api.getCurrentUserID();
       const botName = config.botName || 'KagenouBotV3';
       const avatarUrl = `https://graph.facebook.com/${botUID}/picture?type=large`;
-      const activeThreads = Array.from(global.threadState.active.keys()).map(threadID => ({
-        id: threadID,
-        name: global.threadState.active.get(threadID)?.name || `Thread ${threadID}`
-      }));
+      let activeThreads = [];
+
+      if (db) {
+        try {
+          const threads = await db.db("threads").find({}).toArray();
+          if (threads && threads.length > 0) {
+            activeThreads = threads.map(thread => ({
+              id: thread.threadID,
+              name: thread.name || `Unnamed Thread (ID: ${thread.threadID})`
+            }));
+          }
+        } catch (error) {
+          console.error("Error fetching threads from database:", error);
+        }
+      }
 
       const { default: fetch } = require('node-fetch');
       fetch(avatarUrl)
