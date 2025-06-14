@@ -251,7 +251,7 @@ const handleMessage = async (api, event) => {
       if (command.execute) {
         await command.execute(api, event, args, commands, prefix, config.admins, appState, sendMessage, usersData, globalData);
       } else if (command.run) {
-        await command.run({ api, event, args, usersData, globalData, admins: config.admins, prefix: prefix, db });
+        await command.run({ api, event, args, usersData, globalData, admins: config.admins, prefix: prefix, db, commands });
       } else if (command.config && command.config.onStart) {
         await command.config.onStart({
           api,
