@@ -18,22 +18,7 @@ module.exports = {
 
     const { threadID, messageID, senderID } = event;
 
-  if (!admins.includes(senderID)) {
-
-            let errorMessage = `════『 APITEST 』════\n\n`;
-
-            errorMessage += `  ┏━━━━━━━┓\n`;
-
-            errorMessage += `  ┃ 『 𝗜𝗡𝗙𝗢 』 Only admins can use this command.\n`;
-
-            errorMessage += `  ┗━━━━━━━┛\n\n`;
-
-            errorMessage += `> Thank you for using KagenoBoT`;
-
-            return api.sendMessage(errorMessage, threadID, messageID);
-
-        }
-
+ 
 
     if (!args[0] || !args[0].startsWith("http")) {
 
