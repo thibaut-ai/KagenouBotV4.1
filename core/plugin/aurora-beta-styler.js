@@ -209,7 +209,7 @@ const AuroraBetaStyler = {
 
       const font = auroraBetaFonts[headerStyle];
 
-      styledHeader = `════『 ${headerSymbol} ${headerText.split('').map(char => font[char] || char).join('')} 』════`;
+      styledHeader = `━━━『 ${headerSymbol} ${headerText.split('').map(char => font[char] || char).join('')} 』━━━`;
 
     }
 
@@ -239,7 +239,7 @@ const AuroraBetaStyler = {
 
     }
 
-    return `${styledHeader}\n${styledBody}\n═════════════════════\n${styledFooter}`;
+    return `${styledHeader}\n${styledBody}\n━━━━━━━━━━━━━━━━━━━\n${styledFooter}`;
 
   },
 
