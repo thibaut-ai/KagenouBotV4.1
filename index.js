@@ -438,11 +438,11 @@ const startListeningWithAutoRestart = (api) => {
   }, 3600000);
 };
 
-/* const express = require('express');
+/const express = require('express');
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'dashboard', 'public')));
+/*app.use(express.static(path.join(__dirname, 'dashboard', 'public')));
 */
 
 
