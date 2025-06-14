@@ -1,7 +1,11 @@
 /**
  * @author Aljur pogoy
  * Thank you for using our Botfile ✨
+ * This botfile was developed since 2024, December.
  */
+
+
+
 require("ts-node").register();
 require("./core/global");
 const { MongoClient } = require("mongodb");
