@@ -141,7 +141,7 @@ node index.js
 ```
 
 
-## What's New in KagenouBot V3
+## What's New in KagenouBot V4.1
 
 ### MongoDB Integration
 - KagenouBot V4.1 now includes MongoDB support for storing user data, command configurations, and bot settings.
