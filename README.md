@@ -43,7 +43,8 @@ The Seven Shadows are Cid Kagenou's elite shadow organization. Each member posse
 
 ---
 
-## Command System Examples
+# Note 📜
+- Some command are pterodactyl 
 
 ### Basic Command Format, execute async()
 
