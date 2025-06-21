@@ -7,7 +7,7 @@
 
 Welcome to **Official version of KagenouBot ver 4.0.0**, an elite Facebook Messenger bot inspired by *The Eminence in Shadow*. This multi-system bot is built with flexibility, speed, and customization in mind. KagenouBot is your ultimate companion in automating and enhancing chat experiences.
 
-# Introduce the contributors of our KagenouBotV3 Beta Teaser 
+# Introduce the contributors of our KagenouBot 
 
  - **Liane Cagara** — she was the one who really advice me to create and adjust functions and to solve problems on code.
 
