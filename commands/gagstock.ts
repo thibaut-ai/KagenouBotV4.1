@@ -1,7 +1,7 @@
 import axios from "axios";
 import WebSocket from "ws";
 import path from "path";
-import AuroraBetaStyler from "../core/plugins/aurora-beta-styler";
+import AuroraBetaStyler from "../core/plugin/aurora-beta-styler";
 namespace ShadowBot {
   export interface Command {
     config: {
