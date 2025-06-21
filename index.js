@@ -255,8 +255,8 @@ const handleMessage = async (api, event) => {
           args,
           message: {
             reply: (text, callback) => api.sendMessage(text, event.threadID, callback, event.messageID)
-          } */
-        });
+          } 
+          }); */
       }
       if (db && usersData.has(senderID)) {
         const usersCollection = db.db("users");
