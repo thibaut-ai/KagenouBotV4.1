@@ -2,17 +2,8 @@ import axios from "axios";
 import WebSocket from "ws";
 import path from "path";
 import AuroraBetaStyler from "../core/plugin/aurora-beta-styler";
-namespace ShadowBot {
-  export interface Command {
-    config: {
-      name: string;
-      description: string;
-      usage: string;
-      category?: string;
-    };
-    run: (context: { api: any; event: any; args: string[] }) => Promise<void>;
-  }
-}
+
+
 const activeSessions: Map<string, { ws: WebSocket; keepAlive: NodeJS.Timeout; closed: boolean }> = new Map();
 const lastSentCache: Map<string, string> = new Map();
 const PH_TIMEZONE = "Asia/Manila";
