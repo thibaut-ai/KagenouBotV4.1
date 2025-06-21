@@ -454,7 +454,7 @@ const startBot = async () => {
       listenEvents: true,
       logLevel: "silent",
       updatePresence: true,
-      selfListen: true,
+      selfListen: false,
       bypassRegion: "pnb",
       userAgent: "ZmFjZWJvb2tleHRlcm5hbGhpdC8xLjEgKCdodHRwOi8vd3d3LmZhY2Vib29rLmNvbS9leHRlcm5hbGhpdF91YXRleHQucGhwKQ==",
       online: true,
